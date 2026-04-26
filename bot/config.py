@@ -7,7 +7,13 @@ load_dotenv()
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+if not OPENAI_API_KEY:
+    print("⚠️ WARNING: OPENAI_API_KEY is not set. Digest runs will fail.")
+if not DISCORD_WEBHOOK_URL:
+    print("⚠️ WARNING: DISCORD_WEBHOOK_URL is not set. Discord posts will fail.")
+
+# Provide a dummy key if missing to prevent OpenAI client from crashing the dashboard on import
+client = OpenAI(api_key=OPENAI_API_KEY or "dummy_key_to_prevent_crash")
 
 RSS_FEEDS = [
     # News outlets

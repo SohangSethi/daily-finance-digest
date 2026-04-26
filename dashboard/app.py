@@ -3,7 +3,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -75,3 +75,9 @@ async def api_stats():
         "topic_distribution": get_topic_stats(30),
         "recent_runs": get_recent_digests(7),
     }
+
+
+@app.post("/api/run")
+async def api_run_digest(background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_digest_job)
+    return {"status": "started", "message": "Digest run triggered in the background."}
