@@ -210,7 +210,7 @@ export default function HomePage() {
         <div className="max-w-[1440px] mx-auto px-6 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[20px] font-bold tracking-tight" style={{ color: 'var(--bb-text-primary)' }}>
-              Banker<span style={{ color: 'var(--bb-accent)' }}>Brief</span>
+              Banker<span style={{ color: 'var(--bb-accent)' }}>Brief</span> (v2.0.1-test)
             </span>
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--bb-accent)] text-white uppercase tracking-wider ml-1">
               Beta
