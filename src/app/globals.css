@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+/* ==========================================
+   BANKERBRIEF DESIGN SYSTEM
+   ========================================== */
+
+:root {
+  /* Light Mode */
+  --bb-bg: #FFFFFF;
+  --bb-surface: #F8F9FA;
+  --bb-surface-hover: #F1F3F5;
+  --bb-border: #E2E8F0;
+  --bb-border-subtle: #F1F5F9;
+  --bb-text-primary: #0F172A;
+  --bb-text-secondary: #64748B;
+  --bb-text-tertiary: #94A3B8;
+  --bb-text-inverse: #FFFFFF;
+
+  /* Semantic */
+  --bb-positive: #16A34A;
+  --bb-negative: #DC2626;
+  --bb-neutral: #64748B;
+  --bb-accent: #2563EB;
+  --bb-accent-soft: #DBEAFE;
+  --bb-accent-secondary: #7C3AED;
+  --bb-warning: #D97706;
+  --bb-high-impact: #DC2626;
+  --bb-high-impact-bg: #FEF2F2;
+
+  /* Scores */
+  --bb-score-high: #2563EB;
+  --bb-score-mid: #64748B;
+  --bb-score-low: #94A3B8;
+
+  /* Ticker ribbon */
+  --bb-ribbon-bg: #0F172A;
+  --bb-ribbon-text: #E2E8F0;
+
+  /* Misc */
+  --bb-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --bb-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+[data-theme="dark"] {
+  --bb-bg: #0A0A0F;
+  --bb-surface: #141419;
+  --bb-surface-hover: #1A1A22;
+  --bb-border: #1E2028;
+  --bb-border-subtle: #16171E;
+  --bb-text-primary: #E2E8F0;
+  --bb-text-secondary: #94A3B8;
+  --bb-text-tertiary: #64748B;
+  --bb-text-inverse: #0F172A;
+
+  --bb-positive: #22C55E;
+  --bb-negative: #EF4444;
+  --bb-neutral: #94A3B8;
+  --bb-accent: #3B82F6;
+  --bb-accent-soft: #1E3A5F;
+  --bb-accent-secondary: #8B5CF6;
+  --bb-warning: #F59E0B;
+  --bb-high-impact: #EF4444;
+  --bb-high-impact-bg: #1C1015;
+
+  --bb-score-high: #3B82F6;
+  --bb-score-mid: #94A3B8;
+  --bb-score-low: #64748B;
+
+  --bb-ribbon-bg: #06060A;
+  --bb-ribbon-text: #94A3B8;
+
+  --bb-card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --bb-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+@theme inline {
+  --color-background: var(--bb-bg);
+  --color-foreground: var(--bb-text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ==========================================
+   BASE STYLES
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bb-bg);
+  color: var(--bb-text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================
+   TYPOGRAPHY
+   ========================================== */
+
+.text-kpi-value {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.text-kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bb-text-secondary);
+}
+
+.text-ticker {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.text-section-header {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-article-headline {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.text-caption {
+  font-size: 12px;
+  color: var(--bb-text-secondary);
+}
+
+/* ==========================================
+   SCROLLBAR STYLING
+   ========================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bb-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bb-text-tertiary);
+}
+
+/* ==========================================
+   TICKER RIBBON ANIMATION
+   ========================================== */
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-ribbon {
+  animation: ticker-scroll 60s linear infinite;
+}
+
+.ticker-ribbon:hover {
+  animation-play-state: paused;
+}
+
+/* ==========================================
+   SPARKLINE
+   ========================================== */
+
+.sparkline-positive {
+  stroke: var(--bb-positive);
+}
+
+.sparkline-negative {
+  stroke: var(--bb-negative);
+}
+
+.sparkline-neutral {
+  stroke: var(--bb-text-tertiary);
+}
+
+/* ==========================================
+   EXPAND / COLLAPSE ANIMATION
+   ========================================== */
+
+.expand-enter {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 200ms ease, opacity 200ms ease;
+}
+
+.expand-enter-active {
+  max-height: 300px;
+  opacity: 1;
+}
+
+/* ==========================================
+   UTILITY
+   ========================================== */
+
+.bb-card {
+  background: var(--bb-surface);
+  border: 1px solid var(--bb-border);
+  border-radius: 8px;
+  box-shadow: var(--bb-card-shadow);
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.bb-card:hover {
+  box-shadow: var(--bb-card-shadow-hover);
+  border-color: color-mix(in srgb, var(--bb-border) 50%, var(--bb-text-tertiary));
+}
+
+.bb-section {
+  background: var(--bb-surface);
+  border: 1px solid var(--bb-border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.bb-divider {
+  border-top: 1px solid var(--bb-border);
+}
+
+/* Fresh / Stale indicators */
+.pulse-live {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bb-positive);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0); }
+}

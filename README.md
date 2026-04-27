@@ -1,39 +1,21 @@
-# Weekly AI News Digest
+# BankerBrief — Finance Intelligence Dashboard
 
-An automated AI news curation system that delivers the top 10 stories to a Discord community every Monday. Features embedding-based deduplication, topic classification, article ranking, and a live analytics dashboard.
+A production-grade finance intelligence dashboard for Wall Street professionals. Features live market data, AI-curated finance news, economic calendar, earnings tracker, and BIS research analysis.
 
-**Live dashboard:** [ai-digest.up.railway.app](https://ai-digest.up.railway.app)
-
----
-
-## How It Works
-
-```
-RSS Feeds (13 sources)
-    ↓
-Embedding-based deduplication (cosine similarity, threshold=0.85)
-    ↓
-Topic classification (NLP, CV, LLMs, Robotics, General AI)
-    ↓
-Pre-ranking (source diversity + topic spread + recency)
-    ↓
-GPT-4o curation → Top 10 stories
-    ↓
-NYC AI events (GPT-4o Search)
-    ↓
-Discord webhook + SQLite logging → Dashboard
-```
+**Live dashboard:** [Deployed on Railway](https://daily-finance-digest.up.railway.app)
 
 ---
 
 ## Features
 
-- **Embedding-based deduplication** — uses `text-embedding-3-small` + cosine similarity to remove near-duplicate articles across feeds
-- **Topic classification** — reuses dedup embeddings to classify articles into 5 categories at zero extra cost
-- **Smart ranking** — pre-ranks articles by source diversity, topic spread, and recency before GPT-4o selection
-- **Live dashboard** — FastAPI app with Chart.js visualizations (topic distribution, pipeline stats, dedup rates)
-- **Error resilience** — retry logic for GPT-4o, graceful fallback for NYC events, status tracking per run
-- **Cloud deployed** — runs on Railway with persistent SQLite storage
+- **Macro Snapshot** — Fed Funds Rate, CPI, Core PCE, Unemployment, GDP, SOFR, and more via FRED API
+- **Market Instruments** — S&P 500, Nasdaq, Dow, 10Y UST, VIX, WTI Crude, Gold via Yahoo Finance
+- **Live Ticker Ribbon** — Scrolling real-time market prices
+- **AI Top 10 Reads** — GPT-4o curated finance news from bank newsrooms, Reuters, CNBC, MarketWatch, and geopolitics sources
+- **Economic Calendar** — FOMC decisions, CPI releases, PCE, GDP, Nonfarm Payrolls with countdown
+- **Earnings Tracker** — Big Tech + Fortune 100 bank earnings with EPS estimates
+- **BIS Research Intelligence** — Latest Bank for International Settlements papers with GPT-4o plain-English summaries and market impact analysis
+- **Dark/Light Mode** — Premium terminal-style design
 
 ---
 
@@ -41,93 +23,50 @@ Discord webhook + SQLite logging → Dashboard
 
 | Component | Tool |
 |---|---|
-| News collection | 13 RSS feeds via `feedparser` |
-| Deduplication | OpenAI embeddings + scikit-learn cosine similarity |
-| Topic classification | Embedding similarity to reference topics |
-| AI curation | OpenAI GPT-4o |
-| Event search | GPT-4o Search Preview |
-| Delivery | Discord webhook |
-| Database | SQLite with WAL mode |
-| Dashboard | FastAPI + Jinja2 + Chart.js |
-| Scheduling | APScheduler (weekly, Mondays 10 AM ET) |
+| Framework | Next.js 14 + TypeScript |
+| Styling | Tailwind CSS v4 |
+| Macro data | FRED API (Federal Reserve) |
+| Market data | Yahoo Finance (`yahoo-finance2`) |
+| News curation | RSS feeds + OpenAI GPT-4o |
+| BIS research | BIS RSS + GPT-4o analysis |
+| Calendar | Seeded FOMC/CPI/PCE/GDP dates |
 | Hosting | Railway |
-
----
-
-## RSS Sources
-
-TechCrunch AI · VentureBeat AI · The Verge AI · Ars Technica · Ars Technica AI · Wired · MIT Technology Review · Microsoft AI Blog · OpenAI Blog · Google AI Blog · DeepMind Blog · Hugging Face Blog · NVIDIA AI Blog
-
----
-
-## Project Structure
-
-```
-bot/
-  config.py          # Environment vars, RSS feeds, topic definitions
-  feeds.py           # RSS fetching + dedup pipeline
-  dedup.py           # Embedding-based deduplication
-  classifier.py      # Topic classification using embeddings
-  curator.py         # GPT-4o curation, article ranking, URL formatting
-  discord_post.py    # Discord webhook posting
-  database.py        # SQLite schema + queries
-dashboard/
-  app.py             # FastAPI dashboard + scheduler
-  templates/
-    index.html       # Dark-themed dashboard with Chart.js
-data/                # SQLite DB + cached topic embeddings (gitignored)
-run_digest.py        # Entry point
-railway.toml         # Railway deployment config
-```
 
 ---
 
 ## Setup
 
-### 1. Clone and install
-
+### 1. Install
 ```bash
-git clone https://github.com/tanaydangaich/daily-ai-digest
-cd daily-ai-digest
-pip install -r requirements.txt
+npm install
 ```
 
 ### 2. Configure environment
-
-Create a `.env` file:
-
+Create a `.env.local` file:
 ```
 OPENAI_API_KEY=your_openai_api_key
-DISCORD_WEBHOOK_URL=your_discord_webhook_url
-ADMIN_API_KEY=your_admin_key_for_dashboard
+FRED_API_KEY=your_fred_api_key
 ```
 
 ### 3. Run locally
-
 ```bash
-python run_digest.py
+npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000)
 
-### 4. Launch dashboard
-
-```bash
-uvicorn dashboard.app:app --port 8080
-```
-
-### 5. Deploy to Railway
-
-Push to GitHub and connect the repo on [railway.app](https://railway.app). Set the env vars in the Railway dashboard. The `railway.toml` handles the rest.
+### 4. Deploy to Railway
+Push to GitHub and connect the repo on [railway.app](https://railway.app). Set the env vars in the Railway dashboard.
 
 ---
 
-## Cost
+## Data Sources
 
-~$0.10/week — OpenAI API calls (embeddings + GPT-4o + search). RSS feeds and Discord are free. Railway hosting on free tier.
+- **FRED** — Federal Reserve Economic Data (free API key at https://fred.stlouisfed.org/docs/api/api_key.html)
+- **Yahoo Finance** — Market quotes and historical data
+- **RSS Feeds** — Morgan Stanley, Goldman Sachs, JPMorgan, Reuters, CNBC, MarketWatch, CFR, Foreign Affairs
+- **BIS** — Bank for International Settlements research papers
+- **OpenAI GPT-4o** — News curation, market summaries, BIS paper analysis
 
 ---
 
-## Architecture
-
-The pipeline separates **data collection** from **AI processing** — RSS feeds guarantee real, verifiable URLs with publication timestamps. Embeddings handle deduplication and classification before GPT-4o only touches curation. A second model call (`gpt-4o-search-preview`) handles real-time event lookup where web search is needed.
-
-This separation avoids hallucinated URLs and keeps costs low by using cheap embeddings for the heavy lifting.
+© 2025 BankerBrief
