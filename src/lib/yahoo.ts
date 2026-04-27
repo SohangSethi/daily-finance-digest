@@ -3,7 +3,8 @@
 // Uses yahoo-finance2 for market data
 // ============================================================
 
-import yahooFinance from 'yahoo-finance2';
+import YahooFinance from 'yahoo-finance2';
+const yahooFinance = new YahooFinance();
 
 export interface MarketDataPoint {
   name: string;
@@ -46,6 +47,7 @@ async function fetchQuote(symbol: string): Promise<{
   prevClose: number | null;
 }> {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await yahooFinance.quote(symbol);
     return {
       price: result.regularMarketPrice ?? null,
@@ -61,6 +63,7 @@ async function fetchQuote(symbol: string): Promise<{
 
 async function fetchSparkline(symbol: string): Promise<number[]> {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = await yahooFinance.chart(symbol, {
       period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days ago
       period2: new Date().toISOString().split('T')[0],

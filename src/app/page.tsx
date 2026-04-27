@@ -140,6 +140,7 @@ export default function HomePage() {
 
         setData({
           macro: adaptedMacro,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           markets: adaptedMarket.every((m: any) => m.value === '—') ? mockMarket : adaptedMarket,
           ticker: adaptedTicker,
           topReads: json.topReads || mockReads,
@@ -150,6 +151,7 @@ export default function HomePage() {
           whatChanged: json.whatChanged || mockChanges,
           aiMarketSummary: json.marketSummary || aiMarketSummary,
           lastRefreshed: json.lastRefreshed || new Date().toISOString(),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           isLive: (json.macro?.length > 0 && !adaptedMacro.every((m: any) => m.value === '—')) || (json.markets?.length > 0 && !adaptedMarket.every((m: any) => m.value === '—')),
         });
       } catch (err) {
@@ -275,6 +277,7 @@ export default function HomePage() {
                   <span className="text-[11px] font-bold uppercase tracking-wider">⚡ AI Market Summary</span>
                 </div>
                 <p className="text-[13px] text-[var(--bb-text-primary)] leading-snug">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {loading ? <Skeleton className="w-full h-[52px]" /> : (data as any)?.aiMarketSummary || aiMarketSummary}
                 </p>
               </div>

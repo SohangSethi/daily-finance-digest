@@ -7,16 +7,7 @@ interface EventRowProps {
   event: CalendarEvent;
 }
 
-const typeColorMap: Record<string, string> = {
-  fomc: '#DC2626',
-  cpi: '#D97706',
-  pce: '#D97706',
-  gdp: '#2563EB',
-  payrolls: '#7C3AED',
-  ism: '#64748B',
-  refunding: '#0891B2',
-  earnings: '#16A34A',
-};
+
 
 const typeIcons: Record<string, string> = {
   fomc: '🏛',
@@ -30,7 +21,6 @@ const typeIcons: Record<string, string> = {
 };
 
 export default function EventRow({ event }: EventRowProps) {
-  const color = typeColorMap[event.type] || '#64748B';
   const icon = typeIcons[event.type] || '📅';
 
   return (
