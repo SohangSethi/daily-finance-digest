@@ -12,7 +12,7 @@ import { fetchAllFinanceNews, curateFinanceNews, generateMarketSummary } from '@
 import { fetchBISPapers, summarizeBISPapers } from '@/lib/bis';
 
 // Keep mock data as fallbacks
-import { sectorPulse, whatChanged, topReads as mockReads, aiMarketSummary } from '@/lib/mockData';
+import { sectorPulse, whatChanged, topReads as mockReads, aiMarketSummary, bisPapersMock } from '@/lib/mockData';
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
@@ -47,10 +47,12 @@ export async function GET() {
       source: article.source,
       sourceSlug: article.sourceSlug,
       timeAgo: formatTimeAgo(article.publishedAt),
-      score: article.score,
+      compositeScore: article.score,
       tags: [article.primaryTopic],
-      bankerTake: article.whyMatters,
+      whyMatters: article.whyMatters,
       whyRead: article.whyRead,
+      studentWhyRead: article.studentWhyRead || article.whyRead,
+      studentWhyMatters: article.studentWhyMatters || article.whyMatters,
       url: article.url,
     }));
 
@@ -75,7 +77,7 @@ export async function GET() {
       upcomingEarnings,
       topReads: topReads.length > 0 ? topReads : mockReads,
       sectorPulse,
-      bisPapers,
+      bisPapers: bisPapers.length > 0 ? bisPapers : bisPapersMock,
       whatChanged: liveChanges.length > 0 ? liveChanges : whatChanged,
       marketSummary: marketSummary || aiMarketSummary,
       lastRefreshed: new Date().toISOString(),
@@ -100,7 +102,7 @@ export async function GET() {
         upcomingEarnings: getUpcomingEarnings(14),
         topReads: mockReads,
         sectorPulse,
-        bisPapers: [],
+        bisPapers: bisPapersMock,
         whatChanged,
         marketSummary: aiMarketSummary,
         lastRefreshed: new Date().toISOString(),

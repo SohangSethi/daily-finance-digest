@@ -21,6 +21,7 @@ import {
   sectorPulse as mockSectors,
   whatChanged as mockChanges,
   aiMarketSummary,
+  bisPapersMock,
 } from '@/lib/mockData';
 
 interface BISPaper {
@@ -56,6 +57,7 @@ function KPICardSkeleton() {
 
 export default function HomePage() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [viewMode, setViewMode] = useState<'normal' | 'student'>('normal');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{
     macro: typeof mockMacro;
@@ -147,7 +149,7 @@ export default function HomePage() {
           upcomingEvents: adaptedEvents,
           upcomingEarnings: adaptedEarnings,
           sectorPulse: json.sectorPulse || mockSectors,
-          bisPapers: json.bisPapers || [],
+          bisPapers: json.bisPapers?.length > 0 ? json.bisPapers : bisPapersMock,
           whatChanged: json.whatChanged || mockChanges,
           aiMarketSummary: json.marketSummary || aiMarketSummary,
           lastRefreshed: json.lastRefreshed || new Date().toISOString(),
@@ -164,7 +166,7 @@ export default function HomePage() {
           upcomingEvents: mockEvents,
           upcomingEarnings: mockEarnings,
           sectorPulse: mockSectors,
-          bisPapers: [],
+          bisPapers: bisPapersMock,
           whatChanged: mockChanges,
           aiMarketSummary,
           lastRefreshed: new Date().toISOString(),
@@ -276,16 +278,17 @@ export default function HomePage() {
                 <div className="flex items-center gap-1.5 mb-1 text-[var(--bb-accent)]">
                   <span className="text-[11px] font-bold uppercase tracking-wider">⚡ AI Market Summary</span>
                 </div>
-                <p className="text-[13px] text-[var(--bb-text-primary)] leading-snug">
+                <div className="text-[13px] text-[var(--bb-text-primary)] leading-snug">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {loading ? <Skeleton className="w-full h-[52px]" /> : (data as any)?.aiMarketSummary || aiMarketSummary}
-                </p>
+                </div>
               </div>
             </div>
             <div className="flex-shrink-0 self-start mt-1 md:mt-0">
               <FilterPills
-                options={['All', 'IB', 'S&T', 'Corp Fin', 'Buy-Side', 'Student']}
-                defaultSelected="All"
+                options={['Normal', 'Student']}
+                defaultSelected="Normal"
+                onChange={(val) => setViewMode(val.toLowerCase() as 'normal' | 'student')}
               />
             </div>
           </div>
@@ -359,7 +362,7 @@ export default function HomePage() {
               ) : (
                 <div>
                   {(data?.topReads || mockReads).map((article) => (
-                    <ArticleCard key={article.id} article={article} />
+                    <ArticleCard key={article.id} article={article} viewMode={viewMode} />
                   ))}
                 </div>
               )}

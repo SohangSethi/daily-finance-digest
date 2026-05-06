@@ -15,6 +15,8 @@ export interface NewsArticle {
   snippet: string;
   whyRead: string;
   whyMatters: string;
+  studentWhyRead: string;
+  studentWhyMatters: string;
   primaryTopic: string;
   score: number;
 }
@@ -147,6 +149,8 @@ export async function curateFinanceNews(articles: RSSItem[]): Promise<NewsArticl
       snippet: a.description,
       whyRead: a.description,
       whyMatters: 'AI curation unavailable — showing raw feed.',
+      studentWhyRead: a.description,
+      studentWhyMatters: 'AI curation unavailable — showing raw feed.',
       primaryTopic: a.sourceSlug.includes('cfr') || a.sourceSlug.includes('fa') || a.sourceSlug.includes('reuters-world')
         ? 'Geopolitics'
         : 'Markets',
@@ -182,6 +186,8 @@ For each of the 10 stories, respond in this exact JSON format (array of objects)
     "originalIndex": <the [N] number from above>,
     "whyRead": "<1 sentence: why a trader/banker should read this>",
     "whyMatters": "<2-3 sentences: market impact analysis, what it means for positions/sectors>",
+    "studentWhyRead": "<1 sentence: explain to someone who barely knows finance why this article matters, no jargon>",
+    "studentWhyMatters": "<2-3 sentences: plain-English explanation of what this means for the economy and everyday people, explain any financial concepts used>",
     "primaryTopic": "<one of: Markets, Macro, Geopolitics, Central Banks, Earnings, M&A, Regulation, Commodities>",
     "score": <relevance score 60-99>
   }
@@ -207,7 +213,7 @@ Return ONLY the JSON array, no markdown.`
     const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const curated = JSON.parse(jsonStr);
 
-    return curated.map((c: { rank: number; originalIndex: number; whyRead: string; whyMatters: string; primaryTopic: string; score: number }) => {
+    return curated.map((c: { rank: number; originalIndex: number; whyRead: string; whyMatters: string; studentWhyRead?: string; studentWhyMatters?: string; primaryTopic: string; score: number }) => {
       const original = articles[c.originalIndex - 1];
       return {
         id: c.rank,
@@ -220,6 +226,8 @@ Return ONLY the JSON array, no markdown.`
         snippet: original?.description || '',
         whyRead: c.whyRead,
         whyMatters: c.whyMatters,
+        studentWhyRead: c.studentWhyRead || c.whyRead,
+        studentWhyMatters: c.studentWhyMatters || c.whyMatters,
         primaryTopic: c.primaryTopic,
         score: c.score,
       };
@@ -237,6 +245,8 @@ Return ONLY the JSON array, no markdown.`
       snippet: a.description,
       whyRead: a.description,
       whyMatters: 'AI curation temporarily unavailable.',
+      studentWhyRead: a.description,
+      studentWhyMatters: 'AI curation temporarily unavailable.',
       primaryTopic: 'Markets',
       score: 80 - i * 3,
     }));

@@ -6,10 +6,13 @@ import type { Article } from '@/lib/mockData';
 
 interface ArticleCardProps {
   article: Article;
+  viewMode?: 'normal' | 'student';
 }
 
-export default function ArticleCard({ article }: ArticleCardProps) {
+export default function ArticleCard({ article, viewMode = 'normal' }: ArticleCardProps) {
   const [expanded, setExpanded] = useState(false);
+
+  const isStudent = viewMode === 'student';
 
   const sourceColorMap: Record<string, string> = {
     reuters: '#FF6600',
@@ -21,6 +24,14 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   };
 
   const sourceColor = sourceColorMap[article.sourceSlug] || 'var(--bb-text-tertiary)';
+
+  const displayWhyRead = isStudent
+    ? (article.studentWhyRead || article.whyRead)
+    : article.whyRead;
+
+  const displayWhyMatters = isStudent
+    ? (article.studentWhyMatters || article.whyMatters)
+    : article.whyMatters;
 
   return (
     <article className="group py-4 border-b border-[var(--bb-border)] last:border-b-0">
@@ -77,7 +88,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
 
           {/* Why Read This */}
           <p className="text-[13px] text-[var(--bb-text-secondary)] mt-2 leading-relaxed">
-            {article.whyRead}
+            {displayWhyRead}
           </p>
 
           {/* Expand Toggle */}
@@ -100,10 +111,10 @@ export default function ArticleCard({ article }: ArticleCardProps) {
               aria-label="Why it matters analysis"
             >
               <div className="text-[11px] font-semibold text-[var(--bb-accent)] mb-1.5 uppercase tracking-wide">
-                🏦 Banker Take
+                {isStudent ? '📚 Explained Simply' : '🏦 Banker Take'}
               </div>
               <p className="text-[13px] text-[var(--bb-text-primary)] leading-relaxed">
-                {article.whyMatters}
+                {displayWhyMatters}
               </p>
             </div>
           )}

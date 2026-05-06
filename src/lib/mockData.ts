@@ -40,6 +40,8 @@ export interface Article {
   tags: string[];
   whyRead: string;
   whyMatters: string;
+  studentWhyRead: string;
+  studentWhyMatters: string;
   url: string;
   clusterSize?: number;
 }
@@ -270,6 +272,8 @@ export const topReads: Article[] = [
     tags: ['Rates', 'Macro'],
     whyRead: 'Rate path is the dominant input to LBO financing costs — the Fed just shifted its forward guidance language.',
     whyMatters: 'A prolonged pause extends the current rate environment for leveraged finance, keeping spreads stable but limiting refi windows for issuers hoping for lower rates. DCM pipelines should expect steady but unspectacular issuance volumes through Q3. For M&A sponsors, higher-for-longer means continued pressure on deal multiples and carry cost sensitivity in LBO models.',
+    studentWhyRead: 'The Federal Reserve decides interest rates, which affect everything from your student loans to how expensive it is for companies to borrow money. They just hinted rates will stay high longer than expected.',
+    studentWhyMatters: 'When rates stay high, borrowing money costs more for everyone — businesses, homebuyers, and governments. This means companies might delay big investments or acquisitions because financing is expensive. It also means your savings account earns more interest, but mortgages and car loans cost more. The stock market often dips on this news because investors expected rate cuts sooner.',
     url: '#',
     clusterSize: 4,
   },
@@ -285,6 +289,8 @@ export const topReads: Article[] = [
     tags: ['Earnings', 'Financials'],
     whyRead: 'Bellwether bank signals IB fee recovery is real — first strong quarter in 6 for deal activity.',
     whyMatters: 'JPM\'s 27% IB fee jump driven largely by debt underwriting confirms the DCM window is wide open. This sets a positive tone for Goldman and Morgan Stanley earnings later this week. For junior bankers: pipeline acceleration means staffing pressure. For S&T: fixed income trading revenue beat suggests rates vol is still generating desk P&L.',
+    studentWhyRead: 'JPMorgan is the biggest bank in the US. Their earnings report tells us a lot about the health of the banking industry and economy overall.',
+    studentWhyMatters: 'When JPMorgan says their investment banking fees surged 27%, it means companies are actively raising money and doing deals again after a slow period. Think of investment banks as middlemen — they help companies sell stock, issue bonds, or merge with other companies, and earn fees for it. A strong quarter for JPMorgan usually means the other big banks (Goldman, Morgan Stanley) are doing well too.',
     url: '#',
     clusterSize: 3,
   },
@@ -300,6 +306,8 @@ export const topReads: Article[] = [
     tags: ['Rates', 'Macro'],
     whyRead: 'Refunding announcement is the supply-side signal for rates — unchanged coupon sizes remove a key risk factor.',
     whyMatters: 'Steady coupon sizes signal Treasury is comfortable with current issuance pace, reducing term premium anxiety. This is supportive for duration and should keep the 10Y anchored near current levels. For DCM teams, a stable rates backdrop means tighter new-issue concessions and better execution windows.',
+    studentWhyRead: 'The US government borrows money by selling Treasury bonds. This announcement tells us how much they plan to borrow, which directly affects interest rates.',
+    studentWhyMatters: 'The government needs to borrow money to fund its spending. When they announce how many bonds they will sell, it moves the bond market. If they sell too many, it can push interest rates up (bad for stocks and borrowers). Keeping coupon sizes unchanged is a relief — it means no surprise increase in borrowing that would rattle markets.',
     url: '#',
   },
   {
@@ -314,6 +322,8 @@ export const topReads: Article[] = [
     tags: ['AI', 'M&A'],
     whyRead: 'Sets the valuation benchmark for the entire AI sector — directly relevant for TMT bankers and growth equity.',
     whyMatters: '$150B valuation at ~15x forward revenue creates a ceiling comp for every AI startup cap table. TMT groups should expect this to accelerate secondary market activity and IPO conversations across the AI stack. Adjacent infrastructure companies (cloud, chips, data centers) see downstream valuation re-rating.',
+    studentWhyRead: 'OpenAI (the company behind ChatGPT) just raised a record amount of money. This sets the benchmark for how much all AI companies are worth.',
+    studentWhyMatters: 'A $150 billion valuation means investors believe AI is going to be incredibly profitable. This is the largest venture capital round ever — it signals massive confidence in AI technology. It also affects every other AI startup because investors now compare them to OpenAI. Companies that provide the infrastructure for AI (cloud computing, chip makers like Nvidia) also benefit because more AI investment means more demand for their products.',
     url: '#',
     clusterSize: 5,
   },
@@ -329,6 +339,8 @@ export const topReads: Article[] = [
     tags: ['Rates', 'Macro', 'Geopolitics'],
     whyRead: 'ECB-Fed policy divergence widens — direct impact on cross-border deal financing and FX hedging.',
     whyMatters: 'ECB cutting while the Fed holds creates a widening transatlantic rate differential. EUR weakens, making European assets cheaper for USD buyers — bullish for cross-border M&A targeting EU corporates. For credit desks: EUR IG spreads tighten, and reverse-Yankee issuance becomes more attractive for US corporates.',
+    studentWhyRead: 'The European Central Bank just cut interest rates while the US Federal Reserve kept theirs high. When two major economies move in opposite directions on rates, it creates big ripple effects.',
+    studentWhyMatters: 'When Europe cuts rates and the US doesn\'t, the euro gets weaker against the dollar. This makes European goods cheaper for Americans to buy and European companies cheaper to acquire. It also means European consumers and businesses can borrow more cheaply, which should help their economy grow. For investors, this divergence creates opportunities to invest in Europe at a discount.',
     url: '#',
     clusterSize: 6,
   },
@@ -344,6 +356,8 @@ export const topReads: Article[] = [
     tags: ['Antitrust', 'M&A'],
     whyRead: 'Landmark regulatory challenge signals continued FTC/DOJ aggression on horizontal mergers.',
     whyMatters: 'DOJ blocking a $24B retail merger reinforces the current hostile antitrust environment. M&A teams should factor in extended timelines and potential divestitures for any horizontal deal above $5B. Break fees and reverse-break structures become critical negotiation points. This chills the mega-deal pipeline for consumer/retail.',
+    studentWhyRead: 'The government is trying to block two of the biggest grocery chains from merging. This tells us a lot about how tough regulators are being on big company mergers right now.',
+    studentWhyMatters: 'When the Department of Justice blocks a merger, it sends a message to all companies: "We\'re watching." This means companies planning to merge with competitors will face more scrutiny and longer timelines. For consumers, blocking the merger could mean more competition and potentially lower grocery prices. For the business world, it means fewer mega-deals will happen because companies fear getting blocked.',
     url: '#',
   },
   {
@@ -358,6 +372,8 @@ export const topReads: Article[] = [
     tags: ['Credit', 'Macro'],
     whyRead: 'Record IG issuance confirms corporates are front-loading supply before potential rate volatility.',
     whyMatters: 'Record issuance month means DCM desks are running hot — expect syndication pressure and potential spread widening if supply outpaces demand. Corporates are locking in before the June FOMC. For credit analysts: monitor orderbook coverage ratios for signs of demand fatigue at these spreads.',
+    studentWhyRead: 'Companies are rushing to borrow money by issuing bonds at a record pace. This tells us a lot about what corporate America expects to happen with interest rates.',
+    studentWhyMatters: 'When companies issue bonds, they\'re essentially borrowing money from investors and promising to pay it back with interest. Record issuance means companies are racing to lock in current borrowing rates before they potentially go higher. It\'s like everyone refinancing their mortgage at the same time. If too many bonds flood the market, investors may demand higher interest rates, which could affect all borrowing costs.',
     url: '#',
   },
   {
@@ -372,6 +388,8 @@ export const topReads: Article[] = [
     tags: ['AI', 'Equities'],
     whyRead: 'Reshapes the semiconductor supply chain and signals Intel\'s strategic pivot back to manufacturing.',
     whyMatters: 'A $20B capex commitment signals Intel is serious about reclaiming foundry share. Industrials and semiconductor capex teams should note the downstream demand for advanced packaging equipment. For equity research: this reprices Intel\'s sum-of-parts and directly impacts TSMC/ASML competitive dynamics.',
+    studentWhyRead: 'Intel is making a huge $20 billion bet to get back into manufacturing chips. This could reshape who makes the world\'s most important technology.',
+    studentWhyMatters: 'Computer chips are in everything — phones, cars, AI systems, military equipment. Right now, most advanced chips are made in Taiwan (by TSMC), which is a geopolitical risk. Intel spending $20B to build its own advanced manufacturing means the US could become less dependent on Asia for critical technology. This is also a big deal for the AI boom since AI requires massive amounts of computing power.',
     url: '#',
   },
   {
@@ -386,6 +404,8 @@ export const topReads: Article[] = [
     tags: ['Credit', 'M&A'],
     whyRead: 'Private credit milestone reshapes competitive dynamics between banks and alternative lenders.',
     whyMatters: 'At $2T AUM, private credit is no longer an alternative — it\'s the primary market for midcap LBO financing. Banks lose wallet share on leveraged lending but gain advisory and structuring fees. For restructuring teams: private credit\'s growth means more complex creditor dynamics in future default cycles.',
+    studentWhyRead: 'Private credit (non-bank lending) just passed $2 trillion. This is reshaping how companies borrow money and who controls the lending market.',
+    studentWhyMatters: 'Traditionally, if a company needed a big loan, they went to a bank. Now, private credit firms like Apollo and Ares have become major lenders, managing over $2 trillion. This matters because these firms can offer faster, more flexible loans than banks, but often at higher interest rates. For the broader economy, it means more lending is happening outside the regulated banking system, which could be risky during an economic downturn.',
     url: '#',
   },
   {
@@ -400,6 +420,8 @@ export const topReads: Article[] = [
     tags: ['Macro', 'Geopolitics'],
     whyRead: 'Stronger China GDP eases global recession fears but reignites commodity demand and trade tension narratives.',
     whyMatters: 'A 5.3% beat is constructive for global growth but raises commodity price pressure — watch copper, iron ore, and oil. For cross-border teams: Chinese outbound M&A may cautiously resume. For macro desks: this supports the risk-on trade and EM credit but complicates the Fed\'s inflation fight if commodity prices rise.',
+    studentWhyRead: 'China\'s economy grew faster than expected. Since China is the world\'s second-largest economy, this affects global trade, commodity prices, and markets everywhere.',
+    studentWhyMatters: 'China is the world\'s biggest buyer of raw materials like oil, copper, and iron. When their economy grows faster, they buy more of these commodities, pushing prices up globally. Higher commodity prices can increase inflation in the US and Europe. On the positive side, strong Chinese growth means companies that sell to China (like Apple, Tesla, luxury brands) could see better sales. It\'s a double-edged sword for global markets.',
     url: '#',
   },
 ];
@@ -471,3 +493,51 @@ export const whatChanged: WhatChanged[] = [
   { item: 'JPM earnings beat', type: 'article', change: '+3 articles on bank results', direction: 'new' },
   { item: 'TSLA earnings', type: 'event', change: 'Added — reports Wed after close', direction: 'new' },
 ];
+
+// ============================================================
+// BIS RESEARCH PAPERS (FALLBACK)
+// ============================================================
+
+export const bisPapersMock = [
+  {
+    id: 1,
+    title: 'Monetary policy transmission in a high-debt environment',
+    url: 'https://www.bis.org/publ/work1200.htm',
+    publishedAt: '2026-04-28T00:00:00Z',
+    abstract: 'This paper examines how elevated public and private debt levels affect the transmission of monetary policy to the real economy.',
+    aiSummary: 'The paper finds that when government and household debt levels are high, interest rate changes have a weaker effect on economic activity. Central banks may need to raise rates more aggressively to achieve the same cooling effect, but doing so risks triggering debt distress in highly leveraged sectors.',
+    marketImpact: 'Suggests the Fed may need to keep rates higher for longer to tame inflation given current US debt levels. Bearish for long-duration bonds and leveraged credit. Banks with large mortgage portfolios face elevated refinancing risk.',
+    category: 'Monetary Policy',
+  },
+  {
+    id: 2,
+    title: 'Artificial intelligence and financial stability: emerging risks and policy responses',
+    url: 'https://www.bis.org/publ/work1198.htm',
+    publishedAt: '2026-04-22T00:00:00Z',
+    abstract: 'An assessment of how AI-driven trading and lending systems may create new systemic risks in global financial markets.',
+    aiSummary: 'BIS researchers warn that widespread AI adoption in trading and credit decisions could amplify market volatility during stress events. AI models trained on similar data may produce correlated behavior, creating "herding" effects that destabilize markets. The paper calls for new regulatory frameworks to monitor AI concentration in financial services.',
+    marketImpact: 'Could accelerate regulation of AI in finance, particularly algorithmic trading and automated lending. Fintech and AI-heavy asset managers may face new compliance costs. Positive for traditional risk management and RegTech firms.',
+    category: 'Financial Stability',
+  },
+  {
+    id: 3,
+    title: 'Central bank digital currencies: cross-border payment implications',
+    url: 'https://www.bis.org/publ/work1195.htm',
+    publishedAt: '2026-04-15T00:00:00Z',
+    abstract: 'Analysis of how CBDCs could reshape cross-border payment systems and reduce reliance on correspondent banking networks.',
+    aiSummary: 'The BIS explores how central bank digital currencies could make international money transfers faster and cheaper by bypassing traditional correspondent banks. The paper models a multi-CBDC platform where central banks can settle cross-border transactions in seconds instead of days, potentially saving the global economy $120B annually in transaction costs.',
+    marketImpact: 'Disruptive for SWIFT and correspondent banking networks (JPM, Citi, HSBC cross-border revenue). Positive for payment infrastructure providers adapting to CBDC rails. FX market structure could shift as real-time settlement reduces settlement risk.',
+    category: 'Digital Currencies',
+  },
+  {
+    id: 4,
+    title: 'Climate stress testing: lessons from the first generation of exercises',
+    url: 'https://www.bis.org/publ/work1190.htm',
+    publishedAt: '2026-04-08T00:00:00Z',
+    abstract: 'A comprehensive review of climate stress tests conducted by major central banks and their implications for bank capital requirements.',
+    aiSummary: 'After reviewing climate stress tests from 15 central banks, the BIS concludes that banks are significantly underestimating climate-related credit losses. The paper estimates that a disorderly transition to net-zero could increase bank credit losses by 15-25% over the next decade, with energy, real estate, and agriculture sectors most exposed.',
+    marketImpact: 'Could lead to higher capital requirements for banks with large fossil fuel and commercial real estate exposures. European banks face the most immediate impact given ECB prioritization. Green bond issuance likely to accelerate as banks rebalance portfolios.',
+    category: 'Banking Regulation',
+  },
+];
+

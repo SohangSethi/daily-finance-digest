@@ -1,6 +1,6 @@
 // ============================================================
 // SEEDED CALENDAR DATA
-// Official 2025 dates for FOMC, CPI, PCE, GDP, Payrolls, ISM
+// Official 2026 dates for FOMC, CPI, PCE, GDP, Payrolls, ISM
 // + Big Tech / Fortune 100 earnings
 // ============================================================
 
@@ -38,103 +38,103 @@ export function formatEventDate(dateStr: string): string {
 }
 
 // ============================================================
-// FOMC 2025 Meeting Dates (official Fed schedule)
+// FOMC 2026 Meeting Dates (projected Fed schedule)
 // ============================================================
 const fomcDates: EconomicEvent[] = [
-  { id: 101, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-01-29', impactLevel: 'high' },
-  { id: 102, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-03-19', impactLevel: 'high' },
-  { id: 103, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-05-07', impactLevel: 'high' },
-  { id: 104, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-06-18', impactLevel: 'high' },
-  { id: 105, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-07-30', impactLevel: 'high' },
-  { id: 106, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-09-17', impactLevel: 'high' },
-  { id: 107, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-10-29', impactLevel: 'high' },
-  { id: 108, name: 'FOMC Rate Decision', type: 'fomc', date: '2025-12-17', impactLevel: 'high' },
+  { id: 101, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-01-28', impactLevel: 'high' },
+  { id: 102, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-03-18', impactLevel: 'high' },
+  { id: 103, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-05-06', impactLevel: 'high' },
+  { id: 104, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-06-17', impactLevel: 'high' },
+  { id: 105, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-07-29', impactLevel: 'high' },
+  { id: 106, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-09-16', impactLevel: 'high' },
+  { id: 107, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-10-28', impactLevel: 'high' },
+  { id: 108, name: 'FOMC Rate Decision', type: 'fomc', date: '2026-12-16', impactLevel: 'high' },
   // Minutes releases (~3 weeks after decision)
-  { id: 111, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-02-19', impactLevel: 'medium' },
-  { id: 112, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-04-09', impactLevel: 'medium' },
-  { id: 113, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-05-28', impactLevel: 'medium' },
-  { id: 114, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-07-09', impactLevel: 'medium' },
-  { id: 115, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-08-20', impactLevel: 'medium' },
-  { id: 116, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-10-08', impactLevel: 'medium' },
-  { id: 117, name: 'FOMC Minutes Release', type: 'fomc', date: '2025-11-26', impactLevel: 'medium' },
+  { id: 111, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-02-18', impactLevel: 'medium' },
+  { id: 112, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-04-08', impactLevel: 'medium' },
+  { id: 113, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-05-27', impactLevel: 'medium' },
+  { id: 114, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-07-08', impactLevel: 'medium' },
+  { id: 115, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-08-19', impactLevel: 'medium' },
+  { id: 116, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-10-07', impactLevel: 'medium' },
+  { id: 117, name: 'FOMC Minutes Release', type: 'fomc', date: '2026-11-25', impactLevel: 'medium' },
 ];
 
 // ============================================================
-// CPI Release Dates 2025 (BLS schedule)
+// CPI Release Dates 2026 (BLS schedule)
 // ============================================================
 const cpiDates: EconomicEvent[] = [
-  { id: 201, name: 'CPI Release (Jan)', type: 'cpi', date: '2025-02-12', impactLevel: 'high' },
-  { id: 202, name: 'CPI Release (Feb)', type: 'cpi', date: '2025-03-12', impactLevel: 'high' },
-  { id: 203, name: 'CPI Release (Mar)', type: 'cpi', date: '2025-04-10', impactLevel: 'high' },
-  { id: 204, name: 'CPI Release (Apr)', type: 'cpi', date: '2025-05-13', impactLevel: 'high' },
-  { id: 205, name: 'CPI Release (May)', type: 'cpi', date: '2025-06-11', impactLevel: 'high' },
-  { id: 206, name: 'CPI Release (Jun)', type: 'cpi', date: '2025-07-11', impactLevel: 'high' },
-  { id: 207, name: 'CPI Release (Jul)', type: 'cpi', date: '2025-08-12', impactLevel: 'high' },
-  { id: 208, name: 'CPI Release (Aug)', type: 'cpi', date: '2025-09-10', impactLevel: 'high' },
-  { id: 209, name: 'CPI Release (Sep)', type: 'cpi', date: '2025-10-14', impactLevel: 'high' },
-  { id: 210, name: 'CPI Release (Oct)', type: 'cpi', date: '2025-11-12', impactLevel: 'high' },
-  { id: 211, name: 'CPI Release (Nov)', type: 'cpi', date: '2025-12-10', impactLevel: 'high' },
+  { id: 201, name: 'CPI Release (Jan)', type: 'cpi', date: '2026-02-11', impactLevel: 'high' },
+  { id: 202, name: 'CPI Release (Feb)', type: 'cpi', date: '2026-03-11', impactLevel: 'high' },
+  { id: 203, name: 'CPI Release (Mar)', type: 'cpi', date: '2026-04-14', impactLevel: 'high' },
+  { id: 204, name: 'CPI Release (Apr)', type: 'cpi', date: '2026-05-12', impactLevel: 'high' },
+  { id: 205, name: 'CPI Release (May)', type: 'cpi', date: '2026-06-10', impactLevel: 'high' },
+  { id: 206, name: 'CPI Release (Jun)', type: 'cpi', date: '2026-07-14', impactLevel: 'high' },
+  { id: 207, name: 'CPI Release (Jul)', type: 'cpi', date: '2026-08-12', impactLevel: 'high' },
+  { id: 208, name: 'CPI Release (Aug)', type: 'cpi', date: '2026-09-15', impactLevel: 'high' },
+  { id: 209, name: 'CPI Release (Sep)', type: 'cpi', date: '2026-10-13', impactLevel: 'high' },
+  { id: 210, name: 'CPI Release (Oct)', type: 'cpi', date: '2026-11-12', impactLevel: 'high' },
+  { id: 211, name: 'CPI Release (Nov)', type: 'cpi', date: '2026-12-10', impactLevel: 'high' },
 ];
 
 // ============================================================
-// PCE Release Dates 2025 (BEA schedule, ~last Fri of month)
+// PCE Release Dates 2026 (BEA schedule, ~last Fri of month)
 // ============================================================
 const pceDates: EconomicEvent[] = [
-  { id: 301, name: 'Core PCE Release', type: 'pce', date: '2025-01-31', impactLevel: 'high' },
-  { id: 302, name: 'Core PCE Release', type: 'pce', date: '2025-02-28', impactLevel: 'high' },
-  { id: 303, name: 'Core PCE Release', type: 'pce', date: '2025-03-28', impactLevel: 'high' },
-  { id: 304, name: 'Core PCE Release', type: 'pce', date: '2025-04-30', impactLevel: 'high' },
-  { id: 305, name: 'Core PCE Release', type: 'pce', date: '2025-05-30', impactLevel: 'high' },
-  { id: 306, name: 'Core PCE Release', type: 'pce', date: '2025-06-27', impactLevel: 'high' },
-  { id: 307, name: 'Core PCE Release', type: 'pce', date: '2025-07-31', impactLevel: 'high' },
-  { id: 308, name: 'Core PCE Release', type: 'pce', date: '2025-08-29', impactLevel: 'high' },
-  { id: 309, name: 'Core PCE Release', type: 'pce', date: '2025-09-26', impactLevel: 'high' },
-  { id: 310, name: 'Core PCE Release', type: 'pce', date: '2025-10-31', impactLevel: 'high' },
-  { id: 311, name: 'Core PCE Release', type: 'pce', date: '2025-11-26', impactLevel: 'high' },
+  { id: 301, name: 'Core PCE Release', type: 'pce', date: '2026-01-30', impactLevel: 'high' },
+  { id: 302, name: 'Core PCE Release', type: 'pce', date: '2026-02-27', impactLevel: 'high' },
+  { id: 303, name: 'Core PCE Release', type: 'pce', date: '2026-03-27', impactLevel: 'high' },
+  { id: 304, name: 'Core PCE Release', type: 'pce', date: '2026-04-30', impactLevel: 'high' },
+  { id: 305, name: 'Core PCE Release', type: 'pce', date: '2026-05-29', impactLevel: 'high' },
+  { id: 306, name: 'Core PCE Release', type: 'pce', date: '2026-06-26', impactLevel: 'high' },
+  { id: 307, name: 'Core PCE Release', type: 'pce', date: '2026-07-31', impactLevel: 'high' },
+  { id: 308, name: 'Core PCE Release', type: 'pce', date: '2026-08-28', impactLevel: 'high' },
+  { id: 309, name: 'Core PCE Release', type: 'pce', date: '2026-09-25', impactLevel: 'high' },
+  { id: 310, name: 'Core PCE Release', type: 'pce', date: '2026-10-30', impactLevel: 'high' },
+  { id: 311, name: 'Core PCE Release', type: 'pce', date: '2026-11-25', impactLevel: 'high' },
 ];
 
 // ============================================================
-// Jobs Report / Nonfarm Payrolls 2025 (BLS, first Fri of month)
+// Jobs Report / Nonfarm Payrolls 2026 (BLS, first Fri of month)
 // ============================================================
 const payrollDates: EconomicEvent[] = [
-  { id: 401, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-01-10', impactLevel: 'high' },
-  { id: 402, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-02-07', impactLevel: 'high' },
-  { id: 403, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-03-07', impactLevel: 'high' },
-  { id: 404, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-04-04', impactLevel: 'high' },
-  { id: 405, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-05-02', impactLevel: 'high' },
-  { id: 406, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-06-06', impactLevel: 'high' },
-  { id: 407, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-07-03', impactLevel: 'high' },
-  { id: 408, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-08-01', impactLevel: 'high' },
-  { id: 409, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-09-05', impactLevel: 'high' },
-  { id: 410, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-10-03', impactLevel: 'high' },
-  { id: 411, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-11-07', impactLevel: 'high' },
-  { id: 412, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2025-12-05', impactLevel: 'high' },
+  { id: 401, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-01-09', impactLevel: 'high' },
+  { id: 402, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-02-06', impactLevel: 'high' },
+  { id: 403, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-03-06', impactLevel: 'high' },
+  { id: 404, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-04-03', impactLevel: 'high' },
+  { id: 405, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-05-08', impactLevel: 'high' },
+  { id: 406, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-06-05', impactLevel: 'high' },
+  { id: 407, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-07-02', impactLevel: 'high' },
+  { id: 408, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-08-07', impactLevel: 'high' },
+  { id: 409, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-09-04', impactLevel: 'high' },
+  { id: 410, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-10-02', impactLevel: 'high' },
+  { id: 411, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-11-06', impactLevel: 'high' },
+  { id: 412, name: 'Nonfarm Payrolls', type: 'payrolls', date: '2026-12-04', impactLevel: 'high' },
 ];
 
 // ============================================================
-// GDP Release Dates 2025 (BEA)
+// GDP Release Dates 2026 (BEA)
 // ============================================================
 const gdpDates: EconomicEvent[] = [
-  { id: 501, name: 'GDP Q4 2024 Advance', type: 'gdp', date: '2025-01-30', impactLevel: 'high' },
-  { id: 502, name: 'GDP Q4 2024 Second', type: 'gdp', date: '2025-02-27', impactLevel: 'medium' },
-  { id: 503, name: 'GDP Q4 2024 Third', type: 'gdp', date: '2025-03-27', impactLevel: 'medium' },
-  { id: 504, name: 'GDP Q1 2025 Advance', type: 'gdp', date: '2025-04-30', impactLevel: 'high' },
-  { id: 505, name: 'GDP Q1 2025 Second', type: 'gdp', date: '2025-05-29', impactLevel: 'medium' },
-  { id: 506, name: 'GDP Q1 2025 Third', type: 'gdp', date: '2025-06-26', impactLevel: 'medium' },
-  { id: 507, name: 'GDP Q2 2025 Advance', type: 'gdp', date: '2025-07-30', impactLevel: 'high' },
-  { id: 508, name: 'GDP Q3 2025 Advance', type: 'gdp', date: '2025-10-29', impactLevel: 'high' },
+  { id: 501, name: 'GDP Q4 2025 Advance', type: 'gdp', date: '2026-01-29', impactLevel: 'high' },
+  { id: 502, name: 'GDP Q4 2025 Second', type: 'gdp', date: '2026-02-26', impactLevel: 'medium' },
+  { id: 503, name: 'GDP Q4 2025 Third', type: 'gdp', date: '2026-03-26', impactLevel: 'medium' },
+  { id: 504, name: 'GDP Q1 2026 Advance', type: 'gdp', date: '2026-04-29', impactLevel: 'high' },
+  { id: 505, name: 'GDP Q1 2026 Second', type: 'gdp', date: '2026-05-28', impactLevel: 'medium' },
+  { id: 506, name: 'GDP Q1 2026 Third', type: 'gdp', date: '2026-06-25', impactLevel: 'medium' },
+  { id: 507, name: 'GDP Q2 2026 Advance', type: 'gdp', date: '2026-07-29', impactLevel: 'high' },
+  { id: 508, name: 'GDP Q3 2026 Advance', type: 'gdp', date: '2026-10-28', impactLevel: 'high' },
 ];
 
 // ============================================================
 // ISM Manufacturing Dates (first business day of month)
 // ============================================================
 const ismDates: EconomicEvent[] = [
-  { id: 601, name: 'ISM Manufacturing', type: 'ism', date: '2025-05-01', impactLevel: 'medium' },
-  { id: 602, name: 'ISM Manufacturing', type: 'ism', date: '2025-06-02', impactLevel: 'medium' },
-  { id: 603, name: 'ISM Manufacturing', type: 'ism', date: '2025-07-01', impactLevel: 'medium' },
-  { id: 604, name: 'ISM Manufacturing', type: 'ism', date: '2025-08-01', impactLevel: 'medium' },
-  { id: 605, name: 'ISM Manufacturing', type: 'ism', date: '2025-09-02', impactLevel: 'medium' },
-  { id: 606, name: 'ISM Manufacturing', type: 'ism', date: '2025-10-01', impactLevel: 'medium' },
+  { id: 601, name: 'ISM Manufacturing', type: 'ism', date: '2026-05-01', impactLevel: 'medium' },
+  { id: 602, name: 'ISM Manufacturing', type: 'ism', date: '2026-06-01', impactLevel: 'medium' },
+  { id: 603, name: 'ISM Manufacturing', type: 'ism', date: '2026-07-01', impactLevel: 'medium' },
+  { id: 604, name: 'ISM Manufacturing', type: 'ism', date: '2026-08-03', impactLevel: 'medium' },
+  { id: 605, name: 'ISM Manufacturing', type: 'ism', date: '2026-09-01', impactLevel: 'medium' },
+  { id: 606, name: 'ISM Manufacturing', type: 'ism', date: '2026-10-01', impactLevel: 'medium' },
 ];
 
 // ============================================================
@@ -166,36 +166,36 @@ export function getUpcomingEvents(limit: number = 10): (EconomicEvent & { daysUn
 
 // ============================================================
 // EARNINGS CALENDAR — Big Tech + Key Fortune 100
-// Q1 2025 Earnings Season (Apr/May reporting season)
+// Q1 2026 Earnings Season (Apr/May reporting season)
 // ============================================================
 export const earningsCalendar: EarningsEvent[] = ([
-  // Big Tech
-  { company: 'Tesla', ticker: 'TSLA', reportDate: '2025-04-22', reportTime: 'after_close' as const, epsEstimate: '$0.52', sector: 'Technology' },
-  { company: 'Alphabet', ticker: 'GOOGL', reportDate: '2025-04-29', reportTime: 'after_close' as const, epsEstimate: '$1.89', sector: 'Technology' },
-  { company: 'Microsoft', ticker: 'MSFT', reportDate: '2025-04-30', reportTime: 'after_close' as const, epsEstimate: '$2.83', sector: 'Technology' },
-  { company: 'Meta Platforms', ticker: 'META', reportDate: '2025-04-30', reportTime: 'after_close' as const, epsEstimate: '$4.32', sector: 'Technology' },
-  { company: 'Amazon', ticker: 'AMZN', reportDate: '2025-05-01', reportTime: 'after_close' as const, epsEstimate: '$0.98', sector: 'Technology' },
-  { company: 'Apple', ticker: 'AAPL', reportDate: '2025-05-01', reportTime: 'after_close' as const, epsEstimate: '$1.50', sector: 'Technology' },
-  { company: 'NVIDIA', ticker: 'NVDA', reportDate: '2025-05-28', reportTime: 'after_close' as const, epsEstimate: '$0.73', sector: 'Technology' },
+  // Big Tech — Q1 2026 reporting
+  { company: 'Tesla', ticker: 'TSLA', reportDate: '2026-04-22', reportTime: 'after_close' as const, epsEstimate: '$0.68', sector: 'Technology' },
+  { company: 'Alphabet', ticker: 'GOOGL', reportDate: '2026-04-28', reportTime: 'after_close' as const, epsEstimate: '$2.12', sector: 'Technology' },
+  { company: 'Microsoft', ticker: 'MSFT', reportDate: '2026-04-29', reportTime: 'after_close' as const, epsEstimate: '$3.15', sector: 'Technology' },
+  { company: 'Meta Platforms', ticker: 'META', reportDate: '2026-04-29', reportTime: 'after_close' as const, epsEstimate: '$5.10', sector: 'Technology' },
+  { company: 'Amazon', ticker: 'AMZN', reportDate: '2026-05-07', reportTime: 'after_close' as const, epsEstimate: '$1.22', sector: 'Technology' },
+  { company: 'Apple', ticker: 'AAPL', reportDate: '2026-05-07', reportTime: 'after_close' as const, epsEstimate: '$1.65', sector: 'Technology' },
+  { company: 'NVIDIA', ticker: 'NVDA', reportDate: '2026-05-27', reportTime: 'after_close' as const, epsEstimate: '$0.92', sector: 'Technology' },
 
   // Financials
-  { company: 'JPMorgan Chase', ticker: 'JPM', reportDate: '2025-04-11', reportTime: 'before_market' as const, epsEstimate: '$4.17', sector: 'Financials' },
-  { company: 'Goldman Sachs', ticker: 'GS', reportDate: '2025-04-14', reportTime: 'before_market' as const, epsEstimate: '$12.35', sector: 'Financials' },
-  { company: 'Morgan Stanley', ticker: 'MS', reportDate: '2025-04-16', reportTime: 'before_market' as const, epsEstimate: '$1.92', sector: 'Financials' },
-  { company: 'Bank of America', ticker: 'BAC', reportDate: '2025-04-15', reportTime: 'before_market' as const, epsEstimate: '$0.82', sector: 'Financials' },
-  { company: 'Citigroup', ticker: 'C', reportDate: '2025-04-15', reportTime: 'before_market' as const, epsEstimate: '$1.85', sector: 'Financials' },
+  { company: 'JPMorgan Chase', ticker: 'JPM', reportDate: '2026-04-14', reportTime: 'before_market' as const, epsEstimate: '$4.55', sector: 'Financials' },
+  { company: 'Goldman Sachs', ticker: 'GS', reportDate: '2026-04-15', reportTime: 'before_market' as const, epsEstimate: '$13.10', sector: 'Financials' },
+  { company: 'Morgan Stanley', ticker: 'MS', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$2.15', sector: 'Financials' },
+  { company: 'Bank of America', ticker: 'BAC', reportDate: '2026-04-15', reportTime: 'before_market' as const, epsEstimate: '$0.91', sector: 'Financials' },
+  { company: 'Citigroup', ticker: 'C', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$2.05', sector: 'Financials' },
 
   // Healthcare
-  { company: 'Johnson & Johnson', ticker: 'JNJ', reportDate: '2025-04-15', reportTime: 'before_market' as const, epsEstimate: '$2.57', sector: 'Healthcare' },
-  { company: 'UnitedHealth', ticker: 'UNH', reportDate: '2025-04-17', reportTime: 'before_market' as const, epsEstimate: '$7.29', sector: 'Healthcare' },
+  { company: 'Johnson & Johnson', ticker: 'JNJ', reportDate: '2026-04-21', reportTime: 'before_market' as const, epsEstimate: '$2.72', sector: 'Healthcare' },
+  { company: 'UnitedHealth', ticker: 'UNH', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$7.65', sector: 'Healthcare' },
 
   // Consumer
-  { company: 'Procter & Gamble', ticker: 'PG', reportDate: '2025-04-23', reportTime: 'before_market' as const, epsEstimate: '$1.37', sector: 'Consumer' },
-  { company: 'Coca-Cola', ticker: 'KO', reportDate: '2025-04-29', reportTime: 'before_market' as const, epsEstimate: '$0.72', sector: 'Consumer' },
+  { company: 'Procter & Gamble', ticker: 'PG', reportDate: '2026-04-22', reportTime: 'before_market' as const, epsEstimate: '$1.45', sector: 'Consumer' },
+  { company: 'Coca-Cola', ticker: 'KO', reportDate: '2026-04-28', reportTime: 'before_market' as const, epsEstimate: '$0.78', sector: 'Consumer' },
 
   // Industrials / Other
-  { company: 'ExxonMobil', ticker: 'XOM', reportDate: '2025-05-02', reportTime: 'before_market' as const, epsEstimate: '$2.01', sector: 'Energy' },
-  { company: 'Visa', ticker: 'V', reportDate: '2025-04-29', reportTime: 'after_close' as const, epsEstimate: '$2.68', sector: 'Financials' },
+  { company: 'ExxonMobil', ticker: 'XOM', reportDate: '2026-05-01', reportTime: 'before_market' as const, epsEstimate: '$2.18', sector: 'Energy' },
+  { company: 'Visa', ticker: 'V', reportDate: '2026-04-28', reportTime: 'after_close' as const, epsEstimate: '$2.85', sector: 'Financials' },
 ] as EarningsEvent[]).sort((a, b) => new Date(a.reportDate).getTime() - new Date(b.reportDate).getTime());
 
 // Get earnings within a date range
