@@ -360,7 +360,7 @@ export default function HomePage() {
         {/* MAIN GRID: 8/4 split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* LEFT: MAIN CONTENT (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className={`space-y-6 ${roleMode === 'risk' ? 'hidden' : roleMode === 'pm' ? 'lg:col-span-12' : 'lg:col-span-8'}`}>
             {/* AI Top 10 Reads */}
             <section className="bb-section">
               <div className="flex items-center justify-between mb-4">
@@ -464,9 +464,9 @@ export default function HomePage() {
           </div>
 
           {/* RIGHT RAIL (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
-            <section className="bb-section lg:sticky lg:top-[100px]" style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-              <div className="space-y-6">
+          <div className={`space-y-6 ${roleMode === 'pm' ? 'hidden' : roleMode === 'risk' ? 'lg:col-span-12' : 'lg:col-span-4'}`}>
+            <section className={`bb-section lg:sticky lg:top-[100px] ${roleMode === 'risk' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : ''}`} style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+              <div className={`space-y-6 ${roleMode === 'risk' ? 'col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 space-y-0' : ''}`}>
                 {/* Events */}
                 <div>
                   <div className="flex items-center justify-between mb-3">

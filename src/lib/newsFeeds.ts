@@ -269,11 +269,11 @@ Return ONLY the JSON array, no markdown.`
 }
 
 // Generate AI market summary focused on geopolitics impact
-export async function generateMarketSummary(articles: RSSItem[]): Promise<string> {
+export async function generateMarketSummary(articles: RSSItem[]): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey || articles.length === 0) {
-    return 'Markets data loading — AI summary will appear once news feeds are connected.';
+    return null;
   }
 
   const headlines = articles.slice(0, 20).map(a => `• ${a.title} (${a.source})`).join('\n');
