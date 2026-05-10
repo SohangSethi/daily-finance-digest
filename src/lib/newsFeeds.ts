@@ -19,6 +19,8 @@ export interface NewsArticle {
   studentWhyMatters: string;
   primaryTopic: string;
   score: number;
+  affectedTickers?: string[];
+  riskFlags?: string[];
 }
 
 // RSS Feed URLs for finance news
@@ -132,8 +134,10 @@ export async function fetchAllFinanceNews(): Promise<RSSItem[]> {
   return allItems;
 }
 
+import { PortfolioHolding } from './portfolio';
+
 // Use GPT-4o to curate top 10 finance reads
-export async function curateFinanceNews(articles: RSSItem[]): Promise<NewsArticle[]> {
+export async function curateFinanceNews(articles: RSSItem[], portfolioHoldings: PortfolioHolding[] = []): Promise<NewsArticle[]> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey || articles.length === 0) {
@@ -155,6 +159,8 @@ export async function curateFinanceNews(articles: RSSItem[]): Promise<NewsArticl
         ? 'Geopolitics'
         : 'Markets',
       score: 80 - i * 3,
+      affectedTickers: [],
+      riskFlags: [],
     }));
   }
 
@@ -162,6 +168,10 @@ export async function curateFinanceNews(articles: RSSItem[]): Promise<NewsArticl
   const articleList = articles.slice(0, 40).map((a, i) =>
     `[${i + 1}] "${a.title}" — ${a.source}\nURL: ${a.link}\nPreview: ${a.description}`
   ).join('\n\n');
+
+  const portfolioContext = portfolioHoldings.length > 0 
+    ? `\n\nUSER PORTFOLIO:\n${portfolioHoldings.map(h => `${h.ticker} (${h.name})`).join(', ')}\nIf an article impacts these holdings, clearly explain how in "whyMatters".`
+    : '';
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -173,11 +183,9 @@ export async function curateFinanceNews(articles: RSSItem[]): Promise<NewsArticl
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [{
-          role: 'user',
-          content: `You are a senior finance news curator for Wall Street professionals (sales & trading, investment banking, buy-side). From the articles below, select and rank the 10 most important stories.
-
-ARTICLES:
-${articleList}
+          role: 'system',
+          content: `You are an elite Wall Street analyst and risk manager. Curate the top 10 most impactful market stories from the provided news feed.
+          You must read the articles, filter out noise, and explain exactly why the story matters. ${portfolioContext}
 
 For each of the 10 stories, respond in this exact JSON format (array of objects):
 [
@@ -189,7 +197,9 @@ For each of the 10 stories, respond in this exact JSON format (array of objects)
     "studentWhyRead": "<1 sentence: explain to someone who barely knows finance why this article matters, no jargon>",
     "studentWhyMatters": "<2-3 sentences: plain-English explanation of what this means for the economy and everyday people, explain any financial concepts used>",
     "primaryTopic": "<one of: Markets, Macro, Geopolitics, Central Banks, Earnings, M&A, Regulation, Commodities>",
-    "score": <relevance score 60-99>
+    "score": <relevance score 60-99>,
+    "affectedTickers": ["AAPL", "MSFT"] or [],
+    "riskFlags": ["Guidance cut", "Macro Shock"] or []
   }
 ]
 
@@ -213,7 +223,7 @@ Return ONLY the JSON array, no markdown.`
     const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const curated = JSON.parse(jsonStr);
 
-    return curated.map((c: { rank: number; originalIndex: number; whyRead: string; whyMatters: string; studentWhyRead?: string; studentWhyMatters?: string; primaryTopic: string; score: number }) => {
+    return curated.map((c: { rank: number; originalIndex: number; whyRead: string; whyMatters: string; studentWhyRead?: string; studentWhyMatters?: string; primaryTopic: string; score: number; affectedTickers?: string[]; riskFlags?: string[] }) => {
       const original = articles[c.originalIndex - 1];
       return {
         id: c.rank,
@@ -230,10 +240,13 @@ Return ONLY the JSON array, no markdown.`
         studentWhyMatters: c.studentWhyMatters || c.whyMatters,
         primaryTopic: c.primaryTopic,
         score: c.score,
+        affectedTickers: c.affectedTickers || [],
+        riskFlags: c.riskFlags || [],
       };
     });
   } catch (error) {
-    console.error('GPT-4o curation error, falling back:', error);
+    console.error('OpenAI curation error:', error);
+    // Fallback: return top 10 as-is
     return articles.slice(0, 10).map((a, i) => ({
       id: i + 1,
       rank: i + 1,
@@ -249,6 +262,8 @@ Return ONLY the JSON array, no markdown.`
       studentWhyMatters: 'AI curation temporarily unavailable.',
       primaryTopic: 'Markets',
       score: 80 - i * 3,
+      affectedTickers: [],
+      riskFlags: [],
     }));
   }
 }

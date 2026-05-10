@@ -40,7 +40,7 @@ const MARKET_INSTRUMENTS: {
   { name: 'Gold', symbol: 'GC=F', unit: '$', assetClass: 'commodities' },
 ];
 
-async function fetchQuote(symbol: string): Promise<{
+export async function fetchQuote(symbol: string): Promise<{
   price: number | null;
   change: number | null;
   changePct: number | null;

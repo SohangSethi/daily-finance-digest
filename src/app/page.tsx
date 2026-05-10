@@ -9,6 +9,9 @@ import SectorTile from '@/components/SectorTile';
 import FilterPills from '@/components/FilterPills';
 import ChangeBadge from '@/components/ChangeBadge';
 import ThemeToggle from '@/components/ThemeToggle';
+import PortfolioSummaryPanel from '@/components/PortfolioSummaryPanel';
+import RiskDashboardLite from '@/components/RiskDashboardLite';
+import type { PortfolioSummary } from '@/lib/portfolio';
 
 // Fallback mock data (used if API fails)
 import {
@@ -57,9 +60,11 @@ function KPICardSkeleton() {
 
 export default function HomePage() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [roleMode, setRoleMode] = useState<'analyst' | 'pm' | 'risk'>('analyst');
   const [viewMode, setViewMode] = useState<'normal' | 'student'>('normal');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{
+    portfolioSummary?: PortfolioSummary | null;
     macro: typeof mockMacro;
     markets: typeof mockMarket;
     ticker: typeof mockTicker;
@@ -141,6 +146,7 @@ export default function HomePage() {
           : mockEarnings;
 
         setData({
+          portfolioSummary: json.portfolioSummary || null,
           macro: adaptedMacro,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           markets: adaptedMarket.every((m: any) => m.value === '—') ? mockMarket : adaptedMarket,
@@ -159,6 +165,7 @@ export default function HomePage() {
       } catch (err) {
         console.error('Failed to fetch briefing, using mock data:', err);
         setData({
+          portfolioSummary: null,
           macro: mockMacro,
           markets: mockMarket,
           ticker: mockTicker,
@@ -284,7 +291,13 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="flex-shrink-0 self-start mt-1 md:mt-0">
+            <div className="flex-shrink-0 self-start mt-1 md:mt-0 flex gap-2">
+              <FilterPills
+                options={['Analyst', 'PM', 'Risk']}
+                defaultSelected="Analyst"
+                onChange={(val) => setRoleMode(val.toLowerCase() as 'analyst' | 'pm' | 'risk')}
+              />
+              <div className="w-px bg-[var(--bb-border)] mx-1" />
               <FilterPills
                 options={['Normal', 'Student']}
                 defaultSelected="Normal"
@@ -293,6 +306,19 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Role-Specific Panels */}
+        {data?.portfolioSummary && roleMode === 'pm' && (
+          <section className="mb-6">
+            <PortfolioSummaryPanel summary={data.portfolioSummary} />
+          </section>
+        )}
+        
+        {data?.portfolioSummary && roleMode === 'risk' && (
+          <section className="mb-6">
+            <RiskDashboardLite summary={data.portfolioSummary} />
+          </section>
+        )}
 
         {/* Macro & Markets Bar */}
         <section className="mb-6">

@@ -5,7 +5,7 @@ import ScoreBadge from './ScoreBadge';
 import type { Article } from '@/lib/mockData';
 
 interface ArticleCardProps {
-  article: Article;
+  article: Article & { affectedTickers?: string[]; riskFlags?: string[] };
   viewMode?: 'normal' | 'student';
 }
 
@@ -74,8 +74,8 @@ export default function ArticleCard({ article, viewMode = 'normal' }: ArticleCar
             )}
           </div>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mt-2">
+          {/* Tags & Portfolio Impact */}
+          <div className="flex flex-wrap gap-1.5 mt-2 items-center">
             {article.tags.map((tag) => (
               <span
                 key={tag}
@@ -84,6 +84,26 @@ export default function ArticleCard({ article, viewMode = 'normal' }: ArticleCar
                 {tag}
               </span>
             ))}
+            
+            {article.affectedTickers && article.affectedTickers.length > 0 && (
+              <div className="flex gap-1 ml-2 pl-2 border-l border-[var(--bb-border)]">
+                {article.affectedTickers.map((ticker) => (
+                  <span key={ticker} className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[var(--bb-border)] text-[var(--bb-text-primary)] bg-[var(--bb-surface)]">
+                    {ticker}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {article.riskFlags && article.riskFlags.length > 0 && (
+              <div className="flex gap-1 ml-1">
+                {article.riskFlags.map((flag) => (
+                  <span key={flag} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">
+                    ⚠️ {flag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Why Read This */}
