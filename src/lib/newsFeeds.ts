@@ -177,29 +177,7 @@ export async function curateFinanceNews(articles: RSSItem[], portfolioHoldings: 
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey || articles.length === 0) {
-    // Return articles as-is without GPT curation
-    return articles.slice(0, 10).map((a, i) => ({
-      id: i + 1,
-      rank: i + 1,
-      title: a.title,
-      source: a.source,
-      sourceSlug: a.sourceSlug,
-      url: a.link,
-      publishedAt: a.pubDate,
-      snippet: a.description,
-      summary: a.description,
-      whyRead: a.description,
-      whyMatters: 'AI curation unavailable — showing raw feed.',
-      marketImpact: 'AI curation unavailable — market impact analysis pending.',
-      studentWhyRead: a.description,
-      studentWhyMatters: 'AI curation unavailable — showing raw feed.',
-      primaryTopic: a.sourceSlug.includes('cfr') || a.sourceSlug.includes('fa') || a.sourceSlug.includes('reuters-world')
-        ? 'Geopolitics'
-        : 'Markets',
-      score: 80 - i * 3,
-      affectedTickers: [],
-      riskFlags: [],
-    }));
+    return [];
   }
 
   // Build article list for GPT-4o
@@ -288,27 +266,8 @@ Return ONLY the JSON array, no markdown.`
     });
   } catch (error) {
     console.error('OpenAI curation error:', error);
-    // Fallback: return top 10 as-is
-    return articles.slice(0, 10).map((a, i) => ({
-      id: i + 1,
-      rank: i + 1,
-      title: a.title,
-      source: a.source,
-      sourceSlug: a.sourceSlug,
-      url: a.link,
-      publishedAt: a.pubDate,
-      snippet: a.description,
-      summary: a.description,
-      whyRead: a.description,
-      whyMatters: 'AI curation temporarily unavailable.',
-      marketImpact: 'AI curation temporarily unavailable — market impact pending.',
-      studentWhyRead: a.description,
-      studentWhyMatters: 'AI curation temporarily unavailable.',
-      primaryTopic: 'Markets',
-      score: 80 - i * 3,
-      affectedTickers: [],
-      riskFlags: [],
-    }));
+    // Fallback: return empty so API route uses mockData
+    return [];
   }
 }
 
