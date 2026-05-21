@@ -13,8 +13,10 @@ export interface NewsArticle {
   url: string;
   publishedAt: string;
   snippet: string;
+  summary: string;
   whyRead: string;
   whyMatters: string;
+  marketImpact: string;
   studentWhyRead: string;
   studentWhyMatters: string;
   primaryTopic: string;
@@ -90,12 +92,46 @@ function extractTag(xml: string, tag: string): string {
 
 function cleanHtml(text: string): string {
   return text
+    // Strip HTML tags
     .replace(/<[^>]*>/g, '')
+    // Standard HTML entities
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
+    .replace(/&hellip;/g, '…')
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&ldquo;/g, '\u201C')
+    .replace(/&rdquo;/g, '\u201D')
+    .replace(/&bull;/g, '•')
+    .replace(/&copy;/g, '©')
+    .replace(/&reg;/g, '®')
+    .replace(/&trade;/g, '™')
+    .replace(/&euro;/g, '€')
+    .replace(/&pound;/g, '£')
+    .replace(/&yen;/g, '¥')
+    // Numeric HTML entities
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    // Remove any remaining HTML entities
+    .replace(/&[a-zA-Z]+;/g, '')
+    // Strip common RSS feed artifacts
+    .replace(/&{2,}/g, '') // &&& artifacts
+    .replace(/\${2,}/g, '') // $$$ artifacts
+    .replace(/#{2,}/g, '')  // ### artifacts
+    .replace(/\*{3,}/g, '') // *** artifacts
+    .replace(/={3,}/g, '')  // === artifacts
+    .replace(/~{3,}/g, '')  // ~~~ artifacts
+    // Strip CDATA remnants
+    .replace(/\[CDATA\[/g, '')
+    .replace(/\]\]/g, '')
+    // Normalize whitespace
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -151,8 +187,10 @@ export async function curateFinanceNews(articles: RSSItem[], portfolioHoldings: 
       url: a.link,
       publishedAt: a.pubDate,
       snippet: a.description,
+      summary: a.description,
       whyRead: a.description,
       whyMatters: 'AI curation unavailable — showing raw feed.',
+      marketImpact: 'AI curation unavailable — market impact analysis pending.',
       studentWhyRead: a.description,
       studentWhyMatters: 'AI curation unavailable — showing raw feed.',
       primaryTopic: a.sourceSlug.includes('cfr') || a.sourceSlug.includes('fa') || a.sourceSlug.includes('reuters-world')
@@ -192,8 +230,10 @@ For each of the 10 stories, respond in this exact JSON format (array of objects)
   {
     "rank": 1,
     "originalIndex": <the [N] number from above>,
+    "summary": "<2-3 sentence factual summary of what this article is about>",
     "whyRead": "<1 sentence: why a trader/banker should read this>",
     "whyMatters": "<2-3 sentences: market impact analysis, what it means for positions/sectors>",
+    "marketImpact": "<2-3 sentences: specific market effects — which assets/sectors/instruments move and in which direction>",
     "studentWhyRead": "<1 sentence: explain to someone who barely knows finance why this article matters, no jargon>",
     "studentWhyMatters": "<2-3 sentences: plain-English explanation of what this means for the economy and everyday people, explain any financial concepts used>",
     "primaryTopic": "<one of: Markets, Macro, Geopolitics, Central Banks, Earnings, M&A, Regulation, Commodities>",
@@ -223,7 +263,7 @@ Return ONLY the JSON array, no markdown.`
     const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const curated = JSON.parse(jsonStr);
 
-    return curated.map((c: { rank: number; originalIndex: number; whyRead: string; whyMatters: string; studentWhyRead?: string; studentWhyMatters?: string; primaryTopic: string; score: number; affectedTickers?: string[]; riskFlags?: string[] }) => {
+    return curated.map((c: { rank: number; originalIndex: number; summary?: string; whyRead: string; whyMatters: string; marketImpact?: string; studentWhyRead?: string; studentWhyMatters?: string; primaryTopic: string; score: number; affectedTickers?: string[]; riskFlags?: string[] }) => {
       const original = articles[c.originalIndex - 1];
       return {
         id: c.rank,
@@ -234,8 +274,10 @@ Return ONLY the JSON array, no markdown.`
         url: original?.link || '#',
         publishedAt: original?.pubDate || new Date().toISOString(),
         snippet: original?.description || '',
+        summary: c.summary || original?.description || '',
         whyRead: c.whyRead,
         whyMatters: c.whyMatters,
+        marketImpact: c.marketImpact || '',
         studentWhyRead: c.studentWhyRead || c.whyRead,
         studentWhyMatters: c.studentWhyMatters || c.whyMatters,
         primaryTopic: c.primaryTopic,
@@ -256,8 +298,10 @@ Return ONLY the JSON array, no markdown.`
       url: a.link,
       publishedAt: a.pubDate,
       snippet: a.description,
+      summary: a.description,
       whyRead: a.description,
       whyMatters: 'AI curation temporarily unavailable.',
+      marketImpact: 'AI curation temporarily unavailable — market impact pending.',
       studentWhyRead: a.description,
       studentWhyMatters: 'AI curation temporarily unavailable.',
       primaryTopic: 'Markets',

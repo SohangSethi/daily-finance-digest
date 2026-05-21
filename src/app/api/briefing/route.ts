@@ -10,10 +10,17 @@ import { fetchAllMarketData, fetchTickerData } from '@/lib/yahoo';
 import { getUpcomingEvents, getUpcomingEarnings } from '@/lib/calendar';
 import { fetchAllFinanceNews, curateFinanceNews, generateMarketSummary } from '@/lib/newsFeeds';
 import { fetchBISPapers, summarizeBISPapers } from '@/lib/bis';
-import { mockPortfolio, calculatePortfolioSummary } from '@/lib/portfolio';
 
 // Keep mock data as fallbacks
-import { sectorPulse, whatChanged, topReads as mockReads, aiMarketSummary, bisPapersMock } from '@/lib/mockData';
+import {
+  sectorPulse,
+  whatChanged,
+  topReads as mockReads,
+  aiMarketSummary,
+  bisPapersMock,
+  trendingStocks,
+  geopoliticsNews,
+} from '@/lib/mockData';
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
@@ -28,29 +35,13 @@ export async function GET() {
       fetchBISPapers(),
     ]);
 
-    // Fetch live quotes for portfolio holdings
-    const portfolioQuotes = await Promise.all(
-      mockPortfolio.map(async (holding) => {
-        const { fetchQuote } = await import('@/lib/yahoo');
-        const quote = await fetchQuote(holding.ticker);
-        return { ticker: holding.ticker, quote };
-      })
-    );
-    
-    const liveQuotesRecord: Record<string, any> = {};
-    for (const pq of portfolioQuotes) {
-      liveQuotesRecord[pq.ticker] = pq.quote;
-    }
-
-    const portfolioSummary = calculatePortfolioSummary(mockPortfolio, liveQuotesRecord);
-
     // Get calendar data (no API call, just date math)
     const upcomingEvents = getUpcomingEvents(10);
     const upcomingEarnings = getUpcomingEarnings(14);
 
     // AI-curated finance news + market summary + BIS summaries (sequential to manage API rate)
     const [curatedNews, marketSummary, bisPapers] = await Promise.all([
-      curateFinanceNews(rawNewsArticles, mockPortfolio),
+      curateFinanceNews(rawNewsArticles),
       generateMarketSummary(rawNewsArticles),
       summarizeBISPapers(rawBISPapers),
     ]);
@@ -60,7 +51,7 @@ export async function GET() {
       id: article.id,
       rank: article.rank,
       title: article.title,
-      summary: article.snippet,
+      summary: article.summary || article.snippet,
       source: article.source,
       sourceSlug: article.sourceSlug,
       timeAgo: formatTimeAgo(article.publishedAt),
@@ -68,6 +59,7 @@ export async function GET() {
       tags: [article.primaryTopic],
       whyMatters: article.whyMatters,
       whyRead: article.whyRead,
+      marketImpact: article.marketImpact || '',
       studentWhyRead: article.studentWhyRead || article.whyRead,
       studentWhyMatters: article.studentWhyMatters || article.whyMatters,
       url: article.url,
@@ -89,7 +81,6 @@ export async function GET() {
     // Assemble the briefing
     const briefing = {
       date: new Date().toISOString(),
-      portfolioSummary,
       macro: macroData,
       markets: marketData,
       ticker: tickerItems,
@@ -100,6 +91,8 @@ export async function GET() {
       bisPapers: bisPapers.length > 0 ? bisPapers : bisPapersMock,
       whatChanged: liveChanges.length > 0 ? liveChanges : whatChanged,
       marketSummary: marketSummary || aiMarketSummary,
+      trendingStocks,
+      geopoliticsNews,
       lastRefreshed: new Date().toISOString(),
     };
 
@@ -115,7 +108,6 @@ export async function GET() {
     return NextResponse.json(
       {
         error: 'Partial data available',
-        portfolioSummary: null,
         macro: [],
         markets: [],
         ticker: [],
@@ -126,6 +118,8 @@ export async function GET() {
         bisPapers: bisPapersMock,
         whatChanged,
         marketSummary: aiMarketSummary,
+        trendingStocks,
+        geopoliticsNews,
         lastRefreshed: new Date().toISOString(),
       },
       { status: 206 } // Partial Content

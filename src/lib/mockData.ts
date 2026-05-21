@@ -38,12 +38,53 @@ export interface Article {
   timeAgo: string;
   compositeScore: number;
   tags: string[];
+  summary: string;
   whyRead: string;
   whyMatters: string;
+  marketImpact: string;
   studentWhyRead: string;
   studentWhyMatters: string;
   url: string;
   clusterSize?: number;
+}
+
+// ============================================================
+// STOCKS (EQUITY RESEARCH) DATA
+// ============================================================
+
+export interface TrendingStock {
+  ticker: string;
+  name: string;
+  sector: string;
+  price: number;
+  change: number;
+  changePct: number;
+  marketCap: string;
+  analystRating: 'Strong Buy' | 'Buy' | 'Hold' | 'Sell' | 'Strong Sell';
+  priceTarget: number;
+  priceTargetUpside: number;
+  catalyst: string;
+  whyWatch: string;
+  momentum: 'bullish' | 'bearish' | 'neutral';
+}
+
+// ============================================================
+// GEOPOLITICS DATA
+// ============================================================
+
+export interface GeopoliticsArticle {
+  id: number;
+  title: string;
+  source: string;
+  sourceSlug: string;
+  url: string;
+  publishedAt: string;
+  timeAgo: string;
+  summary: string;
+  region: 'US' | 'Europe' | 'Asia' | 'Middle East' | 'Global';
+  bias: number; // -3 (far left) to +3 (far right), 0 = center
+  biasLabel: string;
+  tags: string[];
 }
 
 export interface CalendarEvent {
@@ -270,8 +311,10 @@ export const topReads: Article[] = [
     timeAgo: '2h ago',
     compositeScore: 94,
     tags: ['Rates', 'Macro'],
+    summary: 'Federal Reserve officials indicated they are in no hurry to cut interest rates after recent inflation data showed limited progress toward the 2% target. Multiple Fed governors reiterated a "data-dependent" stance, pushing back on market expectations for mid-year rate cuts. The 10-year Treasury yield rose 8bp on the news.',
     whyRead: 'Rate path is the dominant input to LBO financing costs — the Fed just shifted its forward guidance language.',
     whyMatters: 'A prolonged pause extends the current rate environment for leveraged finance, keeping spreads stable but limiting refi windows for issuers hoping for lower rates. DCM pipelines should expect steady but unspectacular issuance volumes through Q3. For M&A sponsors, higher-for-longer means continued pressure on deal multiples and carry cost sensitivity in LBO models.',
+    marketImpact: 'Bearish for rate-sensitive sectors (REITs, utilities, homebuilders). 10Y yield likely stays above 4.30%. LBO financing costs remain elevated, cooling sponsor activity. DCM issuance window narrows for sub-IG borrowers. Equity markets pricing out 2-3 expected cuts — watch S&P 500 support at 5,200.',
     studentWhyRead: 'The Federal Reserve decides interest rates, which affect everything from your student loans to how expensive it is for companies to borrow money. They just hinted rates will stay high longer than expected.',
     studentWhyMatters: 'When rates stay high, borrowing money costs more for everyone — businesses, homebuyers, and governments. This means companies might delay big investments or acquisitions because financing is expensive. It also means your savings account earns more interest, but mortgages and car loans cost more. The stock market often dips on this news because investors expected rate cuts sooner.',
     url: '#',
@@ -287,8 +330,10 @@ export const topReads: Article[] = [
     timeAgo: '4h ago',
     compositeScore: 91,
     tags: ['Earnings', 'Financials'],
+    summary: 'JPMorgan Chase reported Q1 earnings that beat analyst estimates, with investment banking fees surging 27% year-over-year driven by a rebound in debt capital markets underwriting. Net interest income came in at $23.1B, and the bank raised its full-year NII guidance. CEO Jamie Dimon struck a cautiously optimistic tone on deal activity.',
     whyRead: 'Bellwether bank signals IB fee recovery is real — first strong quarter in 6 for deal activity.',
     whyMatters: 'JPM\'s 27% IB fee jump driven largely by debt underwriting confirms the DCM window is wide open. This sets a positive tone for Goldman and Morgan Stanley earnings later this week. For junior bankers: pipeline acceleration means staffing pressure. For S&T: fixed income trading revenue beat suggests rates vol is still generating desk P&L.',
+    marketImpact: 'Bullish for KBE (bank ETF) and financial sector broadly. GS and MS likely to report similar IB fee recovery. Credit spreads remain supportive for new issuance. JPM shares +3.2% pre-market — bank earnings rotation trade in play. NII guidance raise positive for regional banks.',
     studentWhyRead: 'JPMorgan is the biggest bank in the US. Their earnings report tells us a lot about the health of the banking industry and economy overall.',
     studentWhyMatters: 'When JPMorgan says their investment banking fees surged 27%, it means companies are actively raising money and doing deals again after a slow period. Think of investment banks as middlemen — they help companies sell stock, issue bonds, or merge with other companies, and earn fees for it. A strong quarter for JPMorgan usually means the other big banks (Goldman, Morgan Stanley) are doing well too.',
     url: '#',
@@ -304,8 +349,10 @@ export const topReads: Article[] = [
     timeAgo: '5h ago',
     compositeScore: 88,
     tags: ['Rates', 'Macro'],
+    summary: 'The U.S. Treasury announced $125 billion in quarterly refunding across 3-year, 10-year, and 30-year maturities, keeping coupon auction sizes unchanged from the previous quarter. The decision signals comfort with the current pace of debt issuance despite elevated fiscal deficits. Bond markets rallied modestly on the news.',
     whyRead: 'Refunding announcement is the supply-side signal for rates — unchanged coupon sizes remove a key risk factor.',
     whyMatters: 'Steady coupon sizes signal Treasury is comfortable with current issuance pace, reducing term premium anxiety. This is supportive for duration and should keep the 10Y anchored near current levels. For DCM teams, a stable rates backdrop means tighter new-issue concessions and better execution windows.',
+    marketImpact: 'Supportive for 10Y and 30Y Treasuries — expect 5-10bp rally. Removes supply overhang fear that had been building. Corporate bond issuance likely to accelerate with stable rate backdrop. TLT (long-bond ETF) could see inflows. Reduces tail risk of term premium spike.',
     studentWhyRead: 'The US government borrows money by selling Treasury bonds. This announcement tells us how much they plan to borrow, which directly affects interest rates.',
     studentWhyMatters: 'The government needs to borrow money to fund its spending. When they announce how many bonds they will sell, it moves the bond market. If they sell too many, it can push interest rates up (bad for stocks and borrowers). Keeping coupon sizes unchanged is a relief — it means no surprise increase in borrowing that would rattle markets.',
     url: '#',
@@ -320,8 +367,10 @@ export const topReads: Article[] = [
     timeAgo: '8h ago',
     compositeScore: 86,
     tags: ['AI', 'M&A'],
+    summary: 'OpenAI has completed a $6.6 billion funding round at a $150 billion valuation, making it the largest venture capital raise in history. The round was led by Thrive Capital with participation from Microsoft, Nvidia, and SoftBank. The funds will be used to scale compute infrastructure and accelerate the development of GPT-5 and enterprise AI products.',
     whyRead: 'Sets the valuation benchmark for the entire AI sector — directly relevant for TMT bankers and growth equity.',
     whyMatters: '$150B valuation at ~15x forward revenue creates a ceiling comp for every AI startup cap table. TMT groups should expect this to accelerate secondary market activity and IPO conversations across the AI stack. Adjacent infrastructure companies (cloud, chips, data centers) see downstream valuation re-rating.',
+    marketImpact: 'Bullish for NVDA (AI compute demand), MSFT (OpenAI partner), and cloud infrastructure plays (AMZN, GOOGL). Sets valuation ceiling for Anthropic, Mistral IPO discussions. AI infrastructure capex cycle continues — positive for data center REITs (EQIX, DLR). Could trigger AI stock rotation as market digests $150B benchmark.',
     studentWhyRead: 'OpenAI (the company behind ChatGPT) just raised a record amount of money. This sets the benchmark for how much all AI companies are worth.',
     studentWhyMatters: 'A $150 billion valuation means investors believe AI is going to be incredibly profitable. This is the largest venture capital round ever — it signals massive confidence in AI technology. It also affects every other AI startup because investors now compare them to OpenAI. Companies that provide the infrastructure for AI (cloud computing, chip makers like Nvidia) also benefit because more AI investment means more demand for their products.',
     url: '#',
@@ -337,8 +386,10 @@ export const topReads: Article[] = [
     timeAgo: '10h ago',
     compositeScore: 84,
     tags: ['Rates', 'Macro', 'Geopolitics'],
+    summary: 'The European Central Bank cut its main refinancing rate by 25 basis points to 4.25%, citing Eurozone inflation falling to 2.1% — near its 2% target. ECB President Lagarde signaled further cuts are likely if disinflation continues, putting the ECB on a divergent path from the Federal Reserve which remains on hold.',
     whyRead: 'ECB-Fed policy divergence widens — direct impact on cross-border deal financing and FX hedging.',
     whyMatters: 'ECB cutting while the Fed holds creates a widening transatlantic rate differential. EUR weakens, making European assets cheaper for USD buyers — bullish for cross-border M&A targeting EU corporates. For credit desks: EUR IG spreads tighten, and reverse-Yankee issuance becomes more attractive for US corporates.',
+    marketImpact: 'EUR/USD drops toward 1.06 — bullish for US exporters with euro-denominated costs. European equities (STOXX 600) rally on lower rates. Cross-border M&A targeting EU companies gets 5-8% cheaper in USD terms. Reverse-Yankee bond issuance to accelerate. DXY strengthens, pressuring gold and EM currencies.',
     studentWhyRead: 'The European Central Bank just cut interest rates while the US Federal Reserve kept theirs high. When two major economies move in opposite directions on rates, it creates big ripple effects.',
     studentWhyMatters: 'When Europe cuts rates and the US doesn\'t, the euro gets weaker against the dollar. This makes European goods cheaper for Americans to buy and European companies cheaper to acquire. It also means European consumers and businesses can borrow more cheaply, which should help their economy grow. For investors, this divergence creates opportunities to invest in Europe at a discount.',
     url: '#',
@@ -354,8 +405,10 @@ export const topReads: Article[] = [
     timeAgo: '11h ago',
     compositeScore: 82,
     tags: ['Antitrust', 'M&A'],
+    summary: 'The Department of Justice filed suit to block Kroger\'s $24.6 billion acquisition of Albertsons, arguing the merger would eliminate competition in hundreds of local grocery markets and lead to higher food prices. The DOJ rejected proposed divestitures of 400+ stores as insufficient to preserve competition.',
     whyRead: 'Landmark regulatory challenge signals continued FTC/DOJ aggression on horizontal mergers.',
     whyMatters: 'DOJ blocking a $24B retail merger reinforces the current hostile antitrust environment. M&A teams should factor in extended timelines and potential divestitures for any horizontal deal above $5B. Break fees and reverse-break structures become critical negotiation points. This chills the mega-deal pipeline for consumer/retail.',
+    marketImpact: 'KR and ACI shares diverge — ACI drops on deal uncertainty, KR rallies on standalone value. Broader M&A deal spreads widen across pending mergers. Regulatory risk premium increases for horizontal consumer deals. Advisory fees at risk as mega-deal pipeline cools. Watch for divestiture buyer opportunities (C&S Wholesale).',
     studentWhyRead: 'The government is trying to block two of the biggest grocery chains from merging. This tells us a lot about how tough regulators are being on big company mergers right now.',
     studentWhyMatters: 'When the Department of Justice blocks a merger, it sends a message to all companies: "We\'re watching." This means companies planning to merge with competitors will face more scrutiny and longer timelines. For consumers, blocking the merger could mean more competition and potentially lower grocery prices. For the business world, it means fewer mega-deals will happen because companies fear getting blocked.',
     url: '#',
@@ -370,8 +423,10 @@ export const topReads: Article[] = [
     timeAgo: '12h ago',
     compositeScore: 80,
     tags: ['Credit', 'Macro'],
+    summary: 'Investment-grade corporate bond issuance reached $45 billion in April with two weeks remaining, putting the month on pace to break the all-time record. Major issuers include Apple ($5.5B), Amazon ($4B), and Pfizer ($3.5B). Demand remains strong with average orderbook coverage at 3.2x, though new-issue concessions have widened slightly.',
     whyRead: 'Record IG issuance confirms corporates are front-loading supply before potential rate volatility.',
     whyMatters: 'Record issuance month means DCM desks are running hot — expect syndication pressure and potential spread widening if supply outpaces demand. Corporates are locking in before the June FOMC. For credit analysts: monitor orderbook coverage ratios for signs of demand fatigue at these spreads.',
+    marketImpact: 'IG spreads may widen 3-5bp on supply indigestion. LQD (IG bond ETF) sees selling pressure. DCM desk revenues at banks surge — positive for Q2 earnings. Corporates front-loading supply signals concern about H2 rate volatility. Watch 5Y IG spreads for demand fatigue signals.',
     studentWhyRead: 'Companies are rushing to borrow money by issuing bonds at a record pace. This tells us a lot about what corporate America expects to happen with interest rates.',
     studentWhyMatters: 'When companies issue bonds, they\'re essentially borrowing money from investors and promising to pay it back with interest. Record issuance means companies are racing to lock in current borrowing rates before they potentially go higher. It\'s like everyone refinancing their mortgage at the same time. If too many bonds flood the market, investors may demand higher interest rates, which could affect all borrowing costs.',
     url: '#',
@@ -386,8 +441,10 @@ export const topReads: Article[] = [
     timeAgo: '13h ago',
     compositeScore: 78,
     tags: ['AI', 'Equities'],
+    summary: 'Intel unveiled a $20 billion strategic partnership with TSMC and ASML to develop next-generation chip packaging technology. The multi-year deal positions Intel\'s foundry division to compete for advanced AI chip manufacturing contracts, leveraging TSMC\'s process expertise and ASML\'s EUV lithography systems.',
     whyRead: 'Reshapes the semiconductor supply chain and signals Intel\'s strategic pivot back to manufacturing.',
     whyMatters: 'A $20B capex commitment signals Intel is serious about reclaiming foundry share. Industrials and semiconductor capex teams should note the downstream demand for advanced packaging equipment. For equity research: this reprices Intel\'s sum-of-parts and directly impacts TSMC/ASML competitive dynamics.',
+    marketImpact: 'INTC +6% on strategic clarity — sum-of-parts revaluation underway. ASML benefits from equipment orders ($3-4B pipeline). TSM faces new competitor but validates advanced packaging demand. Positive for SMH (semiconductor ETF) broadly. US CHIPS Act beneficiaries see renewed interest.',
     studentWhyRead: 'Intel is making a huge $20 billion bet to get back into manufacturing chips. This could reshape who makes the world\'s most important technology.',
     studentWhyMatters: 'Computer chips are in everything — phones, cars, AI systems, military equipment. Right now, most advanced chips are made in Taiwan (by TSMC), which is a geopolitical risk. Intel spending $20B to build its own advanced manufacturing means the US could become less dependent on Asia for critical technology. This is also a big deal for the AI boom since AI requires massive amounts of computing power.',
     url: '#',
@@ -402,8 +459,10 @@ export const topReads: Article[] = [
     timeAgo: '14h ago',
     compositeScore: 76,
     tags: ['Credit', 'M&A'],
+    summary: 'Global private credit assets under management surpassed $2 trillion for the first time, with Apollo Global Management and Ares Management leading market share gains. The milestone reflects a structural shift in corporate lending away from traditional banks toward alternative credit providers, driven by tighter bank regulation and growing institutional appetite for yield.',
     whyRead: 'Private credit milestone reshapes competitive dynamics between banks and alternative lenders.',
     whyMatters: 'At $2T AUM, private credit is no longer an alternative — it\'s the primary market for midcap LBO financing. Banks lose wallet share on leveraged lending but gain advisory and structuring fees. For restructuring teams: private credit\'s growth means more complex creditor dynamics in future default cycles.',
+    marketImpact: 'APO and ARES shares at all-time highs on AUM growth. Bank leveraged lending revenue under pressure — negative for C and BAC syndicated loan desks. Private credit yields compressing toward syndicated loan levels. Future default cycle will be more complex with fragmented creditor base. Watch for private credit securitization growth.',
     studentWhyRead: 'Private credit (non-bank lending) just passed $2 trillion. This is reshaping how companies borrow money and who controls the lending market.',
     studentWhyMatters: 'Traditionally, if a company needed a big loan, they went to a bank. Now, private credit firms like Apollo and Ares have become major lenders, managing over $2 trillion. This matters because these firms can offer faster, more flexible loans than banks, but often at higher interest rates. For the broader economy, it means more lending is happening outside the regulated banking system, which could be risky during an economic downturn.',
     url: '#',
@@ -418,8 +477,10 @@ export const topReads: Article[] = [
     timeAgo: '16h ago',
     compositeScore: 74,
     tags: ['Macro', 'Geopolitics'],
+    summary: 'China reported Q1 GDP growth of 5.3% year-over-year, beating the 4.8% consensus estimate, driven by a manufacturing recovery fueled by targeted fiscal stimulus and infrastructure spending. However, the property sector remains weak with new home prices declining for the 10th consecutive month, and consumer confidence stayed subdued.',
     whyRead: 'Stronger China GDP eases global recession fears but reignites commodity demand and trade tension narratives.',
     whyMatters: 'A 5.3% beat is constructive for global growth but raises commodity price pressure — watch copper, iron ore, and oil. For cross-border teams: Chinese outbound M&A may cautiously resume. For macro desks: this supports the risk-on trade and EM credit but complicates the Fed\'s inflation fight if commodity prices rise.',
+    marketImpact: 'Copper and iron ore futures rally 2-3%. FXI (China large-cap ETF) up 4%. Australian dollar strengthens on commodity demand. WTI crude pushes toward $80 on demand recovery narrative. EM bond spreads tighten. Watch for trade war rhetoric re-escalation as China exports surge.',
     studentWhyRead: 'China\'s economy grew faster than expected. Since China is the world\'s second-largest economy, this affects global trade, commodity prices, and markets everywhere.',
     studentWhyMatters: 'China is the world\'s biggest buyer of raw materials like oil, copper, and iron. When their economy grows faster, they buy more of these commodities, pushing prices up globally. Higher commodity prices can increase inflation in the US and Europe. On the positive side, strong Chinese growth means companies that sell to China (like Apple, Tesla, luxury brands) could see better sales. It\'s a double-edged sword for global markets.',
     url: '#',
@@ -541,3 +602,263 @@ export const bisPapersMock = [
   },
 ];
 
+// ============================================================
+// TRENDING STOCKS (EQUITY RESEARCH)
+// ============================================================
+
+export const trendingStocks: TrendingStock[] = [
+  {
+    ticker: 'PLTR',
+    name: 'Palantir Technologies',
+    sector: 'AI / Defense Tech',
+    price: 24.85,
+    change: 1.42,
+    changePct: 6.06,
+    marketCap: '$54.2B',
+    analystRating: 'Buy',
+    priceTarget: 28.00,
+    priceTargetUpside: 12.7,
+    catalyst: 'Awarded $480M Army contract for AI-powered battlefield intelligence platform',
+    whyWatch: 'Palantir is the leading pure-play AI/defense contractor with accelerating commercial revenue. Government AI spending is a secular growth story as DoD modernizes.',
+    momentum: 'bullish',
+  },
+  {
+    ticker: 'SMCI',
+    name: 'Super Micro Computer',
+    sector: 'AI Infrastructure',
+    price: 812.30,
+    change: -28.50,
+    changePct: -3.39,
+    marketCap: '$47.8B',
+    analystRating: 'Strong Buy',
+    priceTarget: 1050.00,
+    priceTargetUpside: 29.3,
+    catalyst: 'New liquid-cooled GPU server rack design cuts data center energy costs by 40%',
+    whyWatch: 'SMCI is the picks-and-shovels play for the AI infrastructure buildout. Every major hyperscaler is a customer. Revenue grew 200% YoY last quarter.',
+    momentum: 'bullish',
+  },
+  {
+    ticker: 'CRWD',
+    name: 'CrowdStrike Holdings',
+    sector: 'Cybersecurity',
+    price: 342.15,
+    change: 5.80,
+    changePct: 1.72,
+    marketCap: '$82.1B',
+    analystRating: 'Strong Buy',
+    priceTarget: 400.00,
+    priceTargetUpside: 16.9,
+    catalyst: 'Launched AI-native SOC platform; early enterprise adoption exceeding expectations',
+    whyWatch: 'Cybersecurity spending is non-discretionary and growing 15% annually. CrowdStrike is consolidating the endpoint + cloud security market with 80%+ gross margins.',
+    momentum: 'bullish',
+  },
+  {
+    ticker: 'RKLB',
+    name: 'Rocket Lab USA',
+    sector: 'Space / Aerospace',
+    price: 18.42,
+    change: 0.95,
+    changePct: 5.44,
+    marketCap: '$8.7B',
+    analystRating: 'Buy',
+    priceTarget: 24.00,
+    priceTargetUpside: 30.3,
+    catalyst: 'Neutron medium-lift rocket on track for Q3 maiden flight; $2.2B backlog',
+    whyWatch: 'Only credible competitor to SpaceX in the small/medium launch market. Space economy projected to reach $1.8T by 2035. Government and commercial satellite demand surging.',
+    momentum: 'bullish',
+  },
+  {
+    ticker: 'CELH',
+    name: 'Celsius Holdings',
+    sector: 'Consumer / Beverages',
+    price: 62.30,
+    change: -3.15,
+    changePct: -4.81,
+    marketCap: '$14.8B',
+    analystRating: 'Hold',
+    priceTarget: 70.00,
+    priceTargetUpside: 12.4,
+    catalyst: 'International expansion into UK and Germany; Pepsi distribution deal renewal in Q2',
+    whyWatch: 'Energy drink market is still growing 8% annually and Celsius is taking share from Monster and Red Bull among younger demographics. Margin expansion story as scale increases.',
+    momentum: 'neutral',
+  },
+  {
+    ticker: 'IONQ',
+    name: 'IonQ Inc',
+    sector: 'Quantum Computing',
+    price: 12.85,
+    change: -0.42,
+    changePct: -3.16,
+    marketCap: '$2.8B',
+    analystRating: 'Hold',
+    priceTarget: 15.00,
+    priceTargetUpside: 16.7,
+    catalyst: 'Achieved 35 algorithmic qubits milestone; new enterprise quantum cloud partnerships',
+    whyWatch: 'Quantum computing is a long-term bet on the next computing paradigm. IonQ has the most advanced trapped-ion system. High risk/reward with major government and pharma interest.',
+    momentum: 'neutral',
+  },
+  {
+    ticker: 'RIVN',
+    name: 'Rivian Automotive',
+    sector: 'EV / Automotive',
+    price: 11.20,
+    change: -0.85,
+    changePct: -7.05,
+    marketCap: '$11.4B',
+    analystRating: 'Sell',
+    priceTarget: 9.00,
+    priceTargetUpside: -19.6,
+    catalyst: 'Q1 deliveries missed guidance; cash burn rate raises dilution concerns',
+    whyWatch: 'Rivian is a cautionary tale on EV scaling challenges. Despite strong product reviews, production ramp issues and cash burn are pressuring the stock. Key test for the broader EV thesis.',
+    momentum: 'bearish',
+  },
+  {
+    ticker: 'ARM',
+    name: 'Arm Holdings',
+    sector: 'Semiconductors',
+    price: 148.50,
+    change: 4.20,
+    changePct: 2.91,
+    marketCap: '$155.3B',
+    analystRating: 'Buy',
+    priceTarget: 175.00,
+    priceTargetUpside: 17.8,
+    catalyst: 'New v9 architecture royalty rate increase driving ASP uplift across mobile and server',
+    whyWatch: 'Arm designs the chips inside nearly every smartphone and is expanding into servers, automotive, and AI edge devices. Royalty model means revenue scales with global chip production.',
+    momentum: 'bullish',
+  },
+  {
+    ticker: 'HOOD',
+    name: 'Robinhood Markets',
+    sector: 'Fintech',
+    price: 19.75,
+    change: 1.10,
+    changePct: 5.90,
+    marketCap: '$17.5B',
+    analystRating: 'Buy',
+    priceTarget: 24.00,
+    priceTargetUpside: 21.5,
+    catalyst: 'Launched 3% IRA match and Gold credit card; net deposits surged 40% QoQ',
+    whyWatch: 'Robinhood is pivoting from a meme-stock platform to a full-service fintech. Net deposit growth and expanding product suite suggest the business model is maturing. Profitability inflection in sight.',
+    momentum: 'bullish',
+  },
+];
+
+// ============================================================
+// GEOPOLITICS NEWS
+// ============================================================
+
+export const geopoliticsNews: GeopoliticsArticle[] = [
+  {
+    id: 1,
+    title: 'US-China Trade Tensions Escalate as New Semiconductor Export Restrictions Take Effect',
+    source: 'Reuters',
+    sourceSlug: 'reuters',
+    url: '#',
+    publishedAt: '2025-04-19T08:00:00Z',
+    timeAgo: '1h ago',
+    summary: 'The Biden administration activated expanded semiconductor export controls targeting China\'s AI chip development capabilities. The new rules restrict sales of advanced packaging equipment and close loopholes that allowed indirect shipments through third countries. China\'s Commerce Ministry vowed retaliatory measures.',
+    region: 'Global',
+    bias: 0,
+    biasLabel: 'Center',
+    tags: ['Trade War', 'Semiconductors', 'US-China'],
+  },
+  {
+    id: 2,
+    title: 'NATO Allies Agree to 3% GDP Defense Spending Target Amid Russia-Ukraine Escalation',
+    source: 'BBC World',
+    sourceSlug: 'bbc',
+    url: '#',
+    publishedAt: '2025-04-19T06:30:00Z',
+    timeAgo: '2h ago',
+    summary: 'NATO member states reached a preliminary agreement to raise defense spending targets from 2% to 3% of GDP by 2030. The move comes as Russia intensifies attacks on Ukrainian energy infrastructure and European leaders warn of a prolonged conflict requiring sustained military support.',
+    region: 'Europe',
+    bias: -1,
+    biasLabel: 'Center-Left',
+    tags: ['NATO', 'Defense', 'Russia-Ukraine'],
+  },
+  {
+    id: 3,
+    title: 'Iran Nuclear Talks Resume in Vienna as IAEA Reports Enrichment at Near-Weapons Grade',
+    source: 'Al Jazeera',
+    sourceSlug: 'aljazeera',
+    url: '#',
+    publishedAt: '2025-04-19T05:00:00Z',
+    timeAgo: '4h ago',
+    summary: 'Diplomatic negotiations over Iran\'s nuclear program resumed in Vienna after a 6-month hiatus, with IAEA inspectors confirming uranium enrichment at 83.7% — just below weapons-grade levels. Oil markets responded with WTI crude rising 1.2% on supply disruption fears in the Strait of Hormuz.',
+    region: 'Middle East',
+    bias: -1,
+    biasLabel: 'Center-Left',
+    tags: ['Iran', 'Nuclear', 'Oil Markets'],
+  },
+  {
+    id: 4,
+    title: 'Congress Passes Bipartisan Bill Banning TikTok Unless ByteDance Divests Within 270 Days',
+    source: 'Fox News',
+    sourceSlug: 'fox',
+    url: '#',
+    publishedAt: '2025-04-18T22:00:00Z',
+    timeAgo: '8h ago',
+    summary: 'The House and Senate passed legislation requiring ByteDance to divest TikTok\'s US operations within 270 days or face a nationwide ban. The bill passed with overwhelming bipartisan support, citing national security concerns over Chinese government access to American user data.',
+    region: 'US',
+    bias: 2,
+    biasLabel: 'Right',
+    tags: ['TikTok', 'Big Tech', 'National Security'],
+  },
+  {
+    id: 5,
+    title: 'Taiwan Strait Tensions Rise as PLA Conducts Largest Naval Exercise Since 2022',
+    source: 'Council on Foreign Relations',
+    sourceSlug: 'cfr',
+    url: '#',
+    publishedAt: '2025-04-18T20:00:00Z',
+    timeAgo: '10h ago',
+    summary: 'China\'s People\'s Liberation Army Navy conducted its largest exercise in the Taiwan Strait since August 2022, involving 40+ warships and simulated blockade operations. The Pentagon called the exercises "destabilizing" while Taiwan activated reserve forces. Semiconductor supply chain concerns sent TSM shares down 2.3%.',
+    region: 'Asia',
+    bias: 0,
+    biasLabel: 'Center',
+    tags: ['Taiwan', 'China', 'Supply Chain'],
+  },
+  {
+    id: 6,
+    title: 'Federal Reserve Independence Under Scrutiny as Political Pressure Mounts on Rate Policy',
+    source: 'The New York Times',
+    sourceSlug: 'nyt',
+    url: '#',
+    publishedAt: '2025-04-18T18:30:00Z',
+    timeAgo: '12h ago',
+    summary: 'A growing chorus of Congressional leaders from both parties are publicly pressuring the Federal Reserve to cut interest rates ahead of the election cycle, raising concerns about central bank independence. Fed Chair Powell reiterated that monetary policy decisions are data-driven and free from political influence.',
+    region: 'US',
+    bias: -2,
+    biasLabel: 'Left',
+    tags: ['Federal Reserve', 'Monetary Policy', 'Elections'],
+  },
+  {
+    id: 7,
+    title: 'EU Imposes Carbon Border Tax on Steel and Aluminum Imports, Sparking Trade Disputes',
+    source: 'Financial Times',
+    sourceSlug: 'ft',
+    url: '#',
+    publishedAt: '2025-04-18T16:00:00Z',
+    timeAgo: '14h ago',
+    summary: 'The European Union began enforcing its Carbon Border Adjustment Mechanism (CBAM) on steel and aluminum imports, adding 20-35% tariffs on products from countries without equivalent carbon pricing. India, Turkey, and Brazil signaled potential WTO challenges.',
+    region: 'Europe',
+    bias: -1,
+    biasLabel: 'Center-Left',
+    tags: ['Climate Policy', 'Trade', 'EU'],
+  },
+  {
+    id: 8,
+    title: 'Israel-Saudi Normalization Talks Advance Despite Gaza Conflict, Sources Say',
+    source: 'Associated Press',
+    sourceSlug: 'ap',
+    url: '#',
+    publishedAt: '2025-04-18T14:00:00Z',
+    timeAgo: '16h ago',
+    summary: 'Backchannel diplomatic discussions between Israel and Saudi Arabia on normalization of relations have quietly advanced despite the ongoing Gaza conflict, according to three officials familiar with the talks. A deal could reshape Middle Eastern geopolitics and energy markets.',
+    region: 'Middle East',
+    bias: 0,
+    biasLabel: 'Center',
+    tags: ['Middle East', 'Diplomacy', 'Energy'],
+  },
+];

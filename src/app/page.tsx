@@ -9,9 +9,8 @@ import SectorTile from '@/components/SectorTile';
 import FilterPills from '@/components/FilterPills';
 import ChangeBadge from '@/components/ChangeBadge';
 import ThemeToggle from '@/components/ThemeToggle';
-import PortfolioSummaryPanel from '@/components/PortfolioSummaryPanel';
-import RiskDashboardLite from '@/components/RiskDashboardLite';
-import type { PortfolioSummary } from '@/lib/portfolio';
+import StocksPanel from '@/components/StocksPanel';
+import GeopoliticsSection from '@/components/GeopoliticsSection';
 
 // Fallback mock data (used if API fails)
 import {
@@ -25,7 +24,11 @@ import {
   whatChanged as mockChanges,
   aiMarketSummary,
   bisPapersMock,
+  trendingStocks as mockStocks,
+  geopoliticsNews as mockGeopolitics,
 } from '@/lib/mockData';
+
+import type { TrendingStock, GeopoliticsArticle } from '@/lib/mockData';
 
 interface BISPaper {
   id: number;
@@ -60,11 +63,10 @@ function KPICardSkeleton() {
 
 export default function HomePage() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [roleMode, setRoleMode] = useState<'analyst' | 'pm' | 'risk'>('analyst');
+  const [roleMode, setRoleMode] = useState<'analyst' | 'stocks'>('analyst');
   const [viewMode, setViewMode] = useState<'normal' | 'student'>('normal');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{
-    portfolioSummary?: PortfolioSummary | null;
     macro: typeof mockMacro;
     markets: typeof mockMarket;
     ticker: typeof mockTicker;
@@ -75,6 +77,8 @@ export default function HomePage() {
     bisPapers: BISPaper[];
     whatChanged: typeof mockChanges;
     aiMarketSummary: string;
+    trendingStocks: TrendingStock[];
+    geopoliticsNews: GeopoliticsArticle[];
     lastRefreshed: string;
     isLive: boolean;
   } | null>(null);
@@ -146,7 +150,6 @@ export default function HomePage() {
           : mockEarnings;
 
         setData({
-          portfolioSummary: json.portfolioSummary || null,
           macro: adaptedMacro,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           markets: adaptedMarket.every((m: any) => m.value === '—') ? mockMarket : adaptedMarket,
@@ -158,6 +161,8 @@ export default function HomePage() {
           bisPapers: json.bisPapers?.length > 0 ? json.bisPapers : bisPapersMock,
           whatChanged: json.whatChanged || mockChanges,
           aiMarketSummary: json.marketSummary || aiMarketSummary,
+          trendingStocks: json.trendingStocks || mockStocks,
+          geopoliticsNews: json.geopoliticsNews || mockGeopolitics,
           lastRefreshed: json.lastRefreshed || new Date().toISOString(),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           isLive: (json.macro?.length > 0 && !adaptedMacro.every((m: any) => m.value === '—')) || (json.markets?.length > 0 && !adaptedMarket.every((m: any) => m.value === '—')),
@@ -165,7 +170,6 @@ export default function HomePage() {
       } catch (err) {
         console.error('Failed to fetch briefing, using mock data:', err);
         setData({
-          portfolioSummary: null,
           macro: mockMacro,
           markets: mockMarket,
           ticker: mockTicker,
@@ -176,6 +180,8 @@ export default function HomePage() {
           bisPapers: bisPapersMock,
           whatChanged: mockChanges,
           aiMarketSummary,
+          trendingStocks: mockStocks,
+          geopoliticsNews: mockGeopolitics,
           lastRefreshed: new Date().toISOString(),
           isLive: false,
         });
@@ -219,7 +225,7 @@ export default function HomePage() {
         <div className="max-w-[1440px] mx-auto px-6 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[20px] font-bold tracking-tight" style={{ color: 'var(--bb-text-primary)' }}>
-              Banker<span style={{ color: 'var(--bb-accent)' }}>Brief</span> (v2.0.1-test)
+              Banker<span style={{ color: 'var(--bb-accent)' }}>Brief</span>
             </span>
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--bb-accent)] text-white uppercase tracking-wider ml-1">
               Beta
@@ -293,9 +299,9 @@ export default function HomePage() {
             </div>
             <div className="flex-shrink-0 self-start mt-1 md:mt-0 flex gap-2">
               <FilterPills
-                options={['Analyst', 'PM', 'Risk']}
+                options={['Analyst', 'Stocks']}
                 defaultSelected="Analyst"
-                onChange={(val) => setRoleMode(val.toLowerCase() as 'analyst' | 'pm' | 'risk')}
+                onChange={(val) => setRoleMode(val.toLowerCase() as 'analyst' | 'stocks')}
               />
               <div className="w-px bg-[var(--bb-border)] mx-1" />
               <FilterPills
@@ -307,270 +313,280 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Role-Specific Panels */}
-        {data?.portfolioSummary && roleMode === 'pm' && (
+        {/* ============================================ */}
+        {/* STOCKS TAB — EQUITY RESEARCH                */}
+        {/* ============================================ */}
+        {roleMode === 'stocks' && (
           <section className="mb-6">
-            <PortfolioSummaryPanel summary={data.portfolioSummary} />
-          </section>
-        )}
-        
-        {data?.portfolioSummary && roleMode === 'risk' && (
-          <section className="mb-6">
-            <RiskDashboardLite summary={data.portfolioSummary} />
+            <StocksPanel stocks={data?.trendingStocks || mockStocks} />
           </section>
         )}
 
-        {/* Macro & Markets Bar */}
-        <section className="mb-6">
-          <div className="mb-3">
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📊 Macro Snapshot</span>
-              <span className="text-[10px] text-[var(--bb-text-tertiary)]">
-                {data?.isLive ? 'via FRED' : 'sample data'}
-              </span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {loading
-                ? Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)
-                : (data?.macro || mockMacro).map((ind) => (
-                    <KPICard key={ind.slug} data={ind} variant="macro" />
-                  ))
-              }
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📈 Market Instruments</span>
-              <span className="text-[10px] text-[var(--bb-text-tertiary)]">
-                {data?.isLive ? 'delayed 15m' : 'sample data'}
-              </span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {loading
-                ? Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)
-                : (data?.markets || mockMarket).map((inst) => (
-                    <KPICard key={inst.symbol} data={inst} variant="market" />
-                  ))
-              }
-            </div>
-          </div>
-        </section>
-
-        {/* MAIN GRID: 8/4 split */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* LEFT: MAIN CONTENT (8 cols) */}
-          <div className={`space-y-6 ${roleMode === 'risk' ? 'hidden' : roleMode === 'pm' ? 'lg:col-span-12' : 'lg:col-span-8'}`}>
-            {/* AI Top 10 Reads */}
-            <section className="bb-section">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🏆 AI Top 10 Reads</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bb-accent-soft)] text-[var(--bb-accent)] font-medium">
-                    GPT-4o curated
+        {/* ============================================ */}
+        {/* ANALYST TAB — DEFAULT VIEW                   */}
+        {/* ============================================ */}
+        {roleMode === 'analyst' && (
+          <>
+            {/* Macro & Markets Bar */}
+            <section className="mb-6">
+              <div className="mb-3">
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📊 Macro Snapshot</span>
+                  <span className="text-[10px] text-[var(--bb-text-tertiary)]">
+                    {data?.isLive ? 'via FRED' : 'sample data'}
                   </span>
                 </div>
-                <a href="#" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">
-                  View All Reads →
-                </a>
-              </div>
-
-              {loading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="py-4 border-b border-[var(--bb-border)]">
-                      <Skeleton className="w-3/4 h-5 mb-2" />
-                      <Skeleton className="w-1/3 h-3 mb-2" />
-                      <Skeleton className="w-full h-4" />
-                    </div>
-                  ))}
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {loading
+                    ? Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)
+                    : (data?.macro || mockMacro).map((ind) => (
+                        <KPICard key={ind.slug} data={ind} variant="macro" />
+                      ))
+                  }
                 </div>
-              ) : (
-                <div>
-                  {(data?.topReads || mockReads).map((article) => (
-                    <ArticleCard key={article.id} article={article} viewMode={viewMode} />
-                  ))}
-                </div>
-              )}
-            </section>
-
-            {/* Sector Pulse */}
-            <section className="bb-section">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📊 Sector Pulse</span>
-                <a href="#" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">View Sector Details →</a>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {(data?.sectorPulse || mockSectors).map((sector) => (
-                  <SectorTile key={sector.slug} sector={sector} />
-                ))}
-              </div>
-            </section>
 
-            {/* BIS Research Intelligence */}
-            <section className="bb-section">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🏛️ BIS Research Intelligence</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bb-accent-soft)] text-[var(--bb-accent)] font-medium">
-                    GPT-4o analyzed
+              <div>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📈 Market Instruments</span>
+                  <span className="text-[10px] text-[var(--bb-text-tertiary)]">
+                    {data?.isLive ? 'delayed 15m' : 'sample data'}
                   </span>
                 </div>
-                <a href="https://www.bis.org/research/index.htm" target="_blank" rel="noopener noreferrer" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">BIS.org →</a>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {loading
+                    ? Array.from({ length: 5 }).map((_, i) => <KPICardSkeleton key={i} />)
+                    : (data?.markets || mockMarket).map((inst) => (
+                        <KPICard key={inst.symbol} data={inst} variant="market" />
+                      ))
+                  }
+                </div>
               </div>
-              {loading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="py-4 border-b border-[var(--bb-border)]">
-                      <Skeleton className="w-3/4 h-5 mb-2" />
-                      <Skeleton className="w-full h-4 mb-1" />
-                      <Skeleton className="w-2/3 h-4" />
-                    </div>
-                  ))}
-                </div>
-              ) : (data?.bisPapers && data.bisPapers.length > 0) ? (
-                <div className="space-y-0">
-                  {data.bisPapers.map((paper) => (
-                    <div key={paper.id} className="py-3.5 border-b border-[var(--bb-border-subtle)] last:border-b-0">
-                      <div className="flex items-start gap-3">
-                        <span className={`text-[10px] font-bold px-2 py-1 rounded flex-shrink-0 mt-0.5 ${bisCategoryBg[paper.category] || bisCategoryBg['Research']}`}>
-                          {paper.category}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <a href={paper.url} target="_blank" rel="noopener noreferrer" className="text-[13px] font-semibold text-[var(--bb-text-primary)] hover:text-[var(--bb-accent)] transition-colors leading-snug block">
-                            {paper.title}
-                          </a>
-                          <p className="text-[12px] text-[var(--bb-text-secondary)] mt-1.5 leading-relaxed">
-                            {paper.aiSummary}
-                          </p>
-                          <div className="mt-2 px-2.5 py-1.5 bg-[var(--bb-surface-hover)] rounded border-l-2 border-[var(--bb-warning)]">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--bb-warning)]">Market Impact </span>
-                            <p className="text-[11px] text-[var(--bb-text-primary)] mt-0.5 leading-snug">{paper.marketImpact}</p>
-                          </div>
-                          <span className="text-[10px] text-[var(--bb-text-tertiary)] mt-1.5 block">
-                            {new Date(paper.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-[13px] text-[var(--bb-text-tertiary)] py-4 text-center">
-                  BIS research feed loading... Papers will appear once connected.
-                </div>
-              )}
             </section>
-          </div>
 
-          {/* RIGHT RAIL (4 cols) */}
-          <div className={`space-y-6 ${roleMode === 'pm' ? 'hidden' : roleMode === 'risk' ? 'lg:col-span-12' : 'lg:col-span-4'}`}>
-            <section className={`bb-section lg:sticky lg:top-[100px] ${roleMode === 'risk' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : ''}`} style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-              <div className={`space-y-6 ${roleMode === 'risk' ? 'col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 space-y-0' : ''}`}>
-                {/* Events */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📅 Upcoming Events</span>
-                    <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Full Cal →</a>
+            {/* MAIN GRID: 8/4 split */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* LEFT: MAIN CONTENT (8 cols) */}
+              <div className="space-y-6 lg:col-span-8">
+                {/* AI Top 10 Reads */}
+                <section className="bb-section">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🏆 AI Top 10 Reads</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bb-accent-soft)] text-[var(--bb-accent)] font-medium">
+                        GPT-4o curated
+                      </span>
+                    </div>
+                    <a href="#" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">
+                      View All Reads →
+                    </a>
                   </div>
+
                   {loading ? (
-                    <div className="space-y-2">
-                      {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="w-full h-8" />)}
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="py-4 border-b border-[var(--bb-border)]">
+                          <Skeleton className="w-3/4 h-5 mb-2" />
+                          <Skeleton className="w-1/3 h-3 mb-2" />
+                          <Skeleton className="w-full h-4" />
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div>
-                      {(data?.upcomingEvents || mockEvents).slice(0, 7).map((event) => (
-                        <EventRow key={event.id} event={event} />
+                      {(data?.topReads || mockReads).map((article) => (
+                        <ArticleCard key={article.id} article={article} viewMode={viewMode} />
                       ))}
                     </div>
                   )}
-                </div>
+                </section>
 
-                <div className="bb-divider" />
-
-                {/* Earnings This Week */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>💰 Earnings</span>
-                    <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Full Cal →</a>
+                {/* Sector Pulse */}
+                <section className="bb-section">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📊 Sector Pulse</span>
+                    <a href="#" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">View Sector Details →</a>
                   </div>
-                  <div className="space-y-0">
-                    {(data?.upcomingEarnings || mockEarnings).slice(0, 8).map((earning) => (
-                      <div key={earning.ticker} className="flex items-center gap-3 py-2 border-b border-[var(--bb-border-subtle)] last:border-b-0">
-                        <span className="text-[12px] font-mono font-bold text-[var(--bb-accent)] w-[48px]">{earning.ticker}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[12px] text-[var(--bb-text-primary)] font-medium truncate block">{earning.company}</span>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {(data?.sectorPulse || mockSectors).map((sector) => (
+                      <SectorTile key={sector.slug} sector={sector} />
+                    ))}
+                  </div>
+                </section>
+
+                {/* BIS Research Intelligence */}
+                <section className="bb-section">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🏛️ BIS Research Intelligence</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bb-accent-soft)] text-[var(--bb-accent)] font-medium">
+                        GPT-4o analyzed
+                      </span>
+                    </div>
+                    <a href="https://www.bis.org/research/index.htm" target="_blank" rel="noopener noreferrer" className="text-[12px] text-[var(--bb-accent)] hover:underline font-medium">BIS.org →</a>
+                  </div>
+                  {loading ? (
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="py-4 border-b border-[var(--bb-border)]">
+                          <Skeleton className="w-3/4 h-5 mb-2" />
+                          <Skeleton className="w-full h-4 mb-1" />
+                          <Skeleton className="w-2/3 h-4" />
                         </div>
-                        <div className="text-right flex-shrink-0">
-                          <div className="text-[11px] text-[var(--bb-text-tertiary)]">
-                            {earning.dayOfWeek} · {earning.reportTime === 'before_market' ? 'Pre' : 'Post'}
+                      ))}
+                    </div>
+                  ) : (data?.bisPapers && data.bisPapers.length > 0) ? (
+                    <div className="space-y-0">
+                      {data.bisPapers.map((paper) => (
+                        <div key={paper.id} className="py-3.5 border-b border-[var(--bb-border-subtle)] last:border-b-0">
+                          <div className="flex items-start gap-3">
+                            <span className={`text-[10px] font-bold px-2 py-1 rounded flex-shrink-0 mt-0.5 ${bisCategoryBg[paper.category] || bisCategoryBg['Research']}`}>
+                              {paper.category}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <a href={paper.url} target="_blank" rel="noopener noreferrer" className="text-[13px] font-semibold text-[var(--bb-text-primary)] hover:text-[var(--bb-accent)] transition-colors leading-snug block">
+                                {paper.title}
+                              </a>
+                              <p className="text-[12px] text-[var(--bb-text-secondary)] mt-1.5 leading-relaxed">
+                                {paper.aiSummary}
+                              </p>
+                              <div className="mt-2 px-2.5 py-1.5 bg-[var(--bb-surface-hover)] rounded border-l-2 border-[var(--bb-warning)]">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--bb-warning)]">Market Impact </span>
+                                <p className="text-[11px] text-[var(--bb-text-primary)] mt-0.5 leading-snug">{paper.marketImpact}</p>
+                              </div>
+                              <span className="text-[10px] text-[var(--bb-text-tertiary)] mt-1.5 block">
+                                {new Date(paper.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-[11px] font-mono text-[var(--bb-text-secondary)]">Est: {earning.epsEstimate}</div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bb-divider" />
-
-                {/* What Changed */}
-                <div>
-                  <div className="flex items-center mb-3">
-                    <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🔄 What Changed</span>
-                    <span className="ml-2 text-[10px] text-[var(--bb-text-tertiary)]">Since Yesterday</span>
-                  </div>
-                  <div className="space-y-2.5">
-                    {(data?.whatChanged || mockChanges).map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <ChangeBadge change="" direction={item.direction} size="sm" />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[12px] font-medium text-[var(--bb-text-primary)]">{item.item}</div>
-                          <div className="text-[11px] text-[var(--bb-text-secondary)]">{item.change}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bb-divider" />
-
-                {/* Watchlist */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>⭐ My Watchlist</span>
-                    <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Manage →</a>
-                  </div>
-                  <div className="space-y-2">
-                    {[
-                      { name: 'AAPL', newCount: 2, change: 'Earnings upcoming — 2 new articles' },
-                      { name: '10Y UST', newCount: 0, change: data?.isLive ? `${(data.markets.find((m: {symbol: string}) => m.symbol === '^TNX') as {value: string} | undefined)?.value || '—'}% today` : '4.42% (+8bp today)' },
-                      { name: 'FOMC', newCount: 4, change: 'Next decision upcoming — 4 articles' },
-                      { name: 'AI / LLMs', newCount: 3, change: 'OpenAI funding round — 3 articles' },
-                    ].map((item) => (
-                      <div key={item.name} className="flex items-center gap-2.5 py-2 px-2 -mx-2 rounded hover:bg-[var(--bb-surface-hover)] cursor-pointer transition-colors">
-                        <span className="text-[12px] font-bold text-[var(--bb-accent)] w-[80px] truncate font-mono">{item.name}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[11px] text-[var(--bb-text-secondary)] block truncate">{item.change}</span>
-                        </div>
-                        {item.newCount > 0 && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bb-accent)] text-white min-w-[18px] text-center">{item.newCount}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-[13px] text-[var(--bb-text-tertiary)] py-4 text-center">
+                      BIS research feed loading... Papers will appear once connected.
+                    </div>
+                  )}
+                </section>
               </div>
-            </section>
-          </div>
-        </div>
+
+              {/* RIGHT RAIL (4 cols) */}
+              <div className="space-y-6 lg:col-span-4">
+                <section className="bb-section lg:sticky lg:top-[100px]" style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+                  <div className="space-y-6">
+                    {/* Events */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>📅 Upcoming Events</span>
+                        <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Full Cal →</a>
+                      </div>
+                      {loading ? (
+                        <div className="space-y-2">
+                          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="w-full h-8" />)}
+                        </div>
+                      ) : (
+                        <div>
+                          {(data?.upcomingEvents || mockEvents).slice(0, 7).map((event) => (
+                            <EventRow key={event.id} event={event} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="bb-divider" />
+
+                    {/* Earnings This Week */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>💰 Earnings</span>
+                        <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Full Cal →</a>
+                      </div>
+                      <div className="space-y-0">
+                        {(data?.upcomingEarnings || mockEarnings).slice(0, 8).map((earning) => (
+                          <div key={earning.ticker} className="flex items-center gap-3 py-2 border-b border-[var(--bb-border-subtle)] last:border-b-0">
+                            <span className="text-[12px] font-mono font-bold text-[var(--bb-accent)] w-[48px]">{earning.ticker}</span>
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[12px] text-[var(--bb-text-primary)] font-medium truncate block">{earning.company}</span>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-[11px] text-[var(--bb-text-tertiary)]">
+                                {earning.dayOfWeek} · {earning.reportTime === 'before_market' ? 'Pre' : 'Post'}
+                              </div>
+                              <div className="text-[11px] font-mono text-[var(--bb-text-secondary)]">Est: {earning.epsEstimate}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bb-divider" />
+
+                    {/* What Changed */}
+                    <div>
+                      <div className="flex items-center mb-3">
+                        <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>🔄 What Changed</span>
+                        <span className="ml-2 text-[10px] text-[var(--bb-text-tertiary)]">Since Yesterday</span>
+                      </div>
+                      <div className="space-y-2.5">
+                        {(data?.whatChanged || mockChanges).map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-2">
+                            <ChangeBadge change="" direction={item.direction} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[12px] font-medium text-[var(--bb-text-primary)]">{item.item}</div>
+                              <div className="text-[11px] text-[var(--bb-text-secondary)]">{item.change}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bb-divider" />
+
+                    {/* Watchlist */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-section-header" style={{ color: 'var(--bb-text-primary)' }}>⭐ My Watchlist</span>
+                        <a href="#" className="text-[11px] text-[var(--bb-accent)] hover:underline font-medium">Manage →</a>
+                      </div>
+                      <div className="space-y-2">
+                        {[
+                          { name: 'AAPL', newCount: 2, change: 'Earnings upcoming — 2 new articles' },
+                          { name: '10Y UST', newCount: 0, change: data?.isLive ? `${(data.markets.find((m: {symbol: string}) => m.symbol === '^TNX') as {value: string} | undefined)?.value || '—'}% today` : '4.42% (+8bp today)' },
+                          { name: 'FOMC', newCount: 4, change: 'Next decision upcoming — 4 articles' },
+                          { name: 'AI / LLMs', newCount: 3, change: 'OpenAI funding round — 3 articles' },
+                        ].map((item) => (
+                          <div key={item.name} className="flex items-center gap-2.5 py-2 px-2 -mx-2 rounded hover:bg-[var(--bb-surface-hover)] cursor-pointer transition-colors">
+                            <span className="text-[12px] font-bold text-[var(--bb-accent)] w-[80px] truncate font-mono">{item.name}</span>
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[11px] text-[var(--bb-text-secondary)] block truncate">{item.change}</span>
+                            </div>
+                            {item.newCount > 0 && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bb-accent)] text-white min-w-[18px] text-center">{item.newCount}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ============================================ */}
+        {/* GEOPOLITICS SECTION — Always visible          */}
+        {/* ============================================ */}
+        <section className="mt-8">
+          <GeopoliticsSection articles={data?.geopoliticsNews || mockGeopolitics} />
+        </section>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-[var(--bb-border)] mt-12">
         <div className="max-w-[1440px] mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2">
           <div className="text-[11px] text-[var(--bb-text-tertiary)]">
-            Data: FRED · Yahoo Finance · BLS · BEA · Treasury · RSS · OpenAI
+            Data: FRED · Yahoo Finance · BLS · BEA · Treasury · RSS · OpenAI · Ground News
           </div>
           <div className="flex items-center gap-4 text-[11px] text-[var(--bb-text-tertiary)]">
             <span>Last refreshed: {refreshTime}</span>

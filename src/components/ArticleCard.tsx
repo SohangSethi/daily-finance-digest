@@ -33,6 +33,9 @@ export default function ArticleCard({ article, viewMode = 'normal' }: ArticleCar
     ? (article.studentWhyMatters || article.whyMatters)
     : article.whyMatters;
 
+  const displayMarketImpact = article.marketImpact || '';
+  const displaySummary = article.summary || '';
+
   return (
     <article className="group py-4 border-b border-[var(--bb-border)] last:border-b-0">
       {/* Top Row: Rank + Headline + Score */}
@@ -106,36 +109,66 @@ export default function ArticleCard({ article, viewMode = 'normal' }: ArticleCar
             )}
           </div>
 
+          {/* Article Summary */}
+          {displaySummary && (
+            <div className="mt-3 px-3 py-2.5 rounded-md bg-[var(--bb-surface-hover)] border border-[var(--bb-border-subtle)]">
+              <div className="text-[10px] font-bold text-[var(--bb-text-tertiary)] uppercase tracking-wider mb-1">
+                📋 Summary
+              </div>
+              <p className="text-[12px] text-[var(--bb-text-primary)] leading-relaxed">
+                {displaySummary}
+              </p>
+            </div>
+          )}
+
           {/* Why Read This */}
-          <p className="text-[13px] text-[var(--bb-text-secondary)] mt-2 leading-relaxed">
+          <p className="text-[13px] text-[var(--bb-text-secondary)] mt-2.5 leading-relaxed">
+            <span className="text-[11px] font-bold text-[var(--bb-accent)] uppercase tracking-wider mr-1.5">Why Read:</span>
             {displayWhyRead}
           </p>
 
           {/* Expand Toggle */}
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-[12px] text-[var(--bb-accent)] hover:underline mt-1.5 flex items-center gap-1 font-medium cursor-pointer"
+            className="text-[12px] text-[var(--bb-accent)] hover:underline mt-2 flex items-center gap-1 font-medium cursor-pointer"
             aria-expanded={expanded}
           >
-            <span className="transition-transform" style={{ transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <span className="transition-transform duration-200" style={{ transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)', display: 'inline-block' }}>
               ▸
             </span>
-            {expanded ? 'Hide' : 'Why It Matters'}
+            {expanded ? 'Collapse Analysis' : 'Why It Matters & Market Impact'}
           </button>
 
-          {/* Why It Matters Panel */}
+          {/* Expanded: Why It Matters + Market Impact */}
           {expanded && (
-            <div
-              className="mt-2 px-3 py-3 rounded-md border-l-2 border-[var(--bb-accent)] bg-[var(--bb-surface-hover)]"
-              role="region"
-              aria-label="Why it matters analysis"
-            >
-              <div className="text-[11px] font-semibold text-[var(--bb-accent)] mb-1.5 uppercase tracking-wide">
-                {isStudent ? '📚 Explained Simply' : '🏦 Banker Take'}
-              </div>
-              <p className="text-[13px] text-[var(--bb-text-primary)] leading-relaxed">
-                {displayWhyMatters}
-              </p>
+            <div className="mt-2.5 space-y-2.5">
+              {/* Why It Matters */}
+              {displayWhyMatters && (
+                <div
+                  className="px-3 py-3 rounded-md border-l-2 border-[var(--bb-accent)] bg-[var(--bb-surface-hover)]"
+                  role="region"
+                  aria-label="Why it matters analysis"
+                >
+                  <div className="text-[11px] font-semibold text-[var(--bb-accent)] mb-1.5 uppercase tracking-wide">
+                    {isStudent ? '📚 Explained Simply' : '🏦 Why It Matters'}
+                  </div>
+                  <p className="text-[12px] text-[var(--bb-text-primary)] leading-relaxed">
+                    {displayWhyMatters}
+                  </p>
+                </div>
+              )}
+
+              {/* Market Impact */}
+              {displayMarketImpact && (
+                <div className="px-3 py-3 rounded-md border-l-2 border-[var(--bb-warning)] bg-[var(--bb-surface-hover)]">
+                  <div className="text-[11px] font-semibold text-[var(--bb-warning)] mb-1.5 uppercase tracking-wide">
+                    📊 How It Affects the Market
+                  </div>
+                  <p className="text-[12px] text-[var(--bb-text-primary)] leading-relaxed">
+                    {displayMarketImpact}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
