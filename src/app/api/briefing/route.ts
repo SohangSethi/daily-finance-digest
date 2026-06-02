@@ -20,6 +20,7 @@ import {
   bisPapersMock,
   trendingStocks,
   geopoliticsNews,
+  trackedInstruments,
 } from '@/lib/mockData';
 
 export const revalidate = 300; // Revalidate every 5 minutes
@@ -93,6 +94,7 @@ export async function GET() {
       marketSummary: marketSummary || aiMarketSummary,
       trendingStocks,
       geopoliticsNews,
+      trackedInstruments,
       lastRefreshed: new Date().toISOString(),
     };
 
@@ -120,6 +122,7 @@ export async function GET() {
         marketSummary: aiMarketSummary,
         trendingStocks,
         geopoliticsNews,
+        trackedInstruments,
         lastRefreshed: new Date().toISOString(),
       },
       { status: 206 } // Partial Content

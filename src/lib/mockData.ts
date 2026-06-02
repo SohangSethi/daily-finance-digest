@@ -87,6 +87,36 @@ export interface GeopoliticsArticle {
   tags: string[];
 }
 
+// ============================================================
+// TRACKED INSTRUMENTS (COMMODITY & INDEX TRACKER)
+// ============================================================
+
+export interface TrackedInstrument {
+  symbol: string;
+  name: string;
+  category: 'equity-index' | 'commodity';
+  price: number;
+  dailyChange: number;
+  dailyChangePct: number;
+  weeklyChange: number;
+  monthlyChange: number;
+  ytdChange: number;
+  high52w: number;
+  low52w: number;
+  sparkline30d: number[];
+  // Strategy signals
+  momentum: 'bullish' | 'bearish' | 'neutral';
+  momentumScore: number; // -100 to +100
+  sma20: number;
+  sma50: number;
+  rsi14: number;
+  strategySignal: 'Strong Buy' | 'Buy' | 'Hold' | 'Sell' | 'Strong Sell';
+  strategyType: 'momentum' | 'mean-reversion' | 'none';
+  // Market note
+  marketNote: string;
+  noteCatalyst: string;
+}
+
 export interface CalendarEvent {
   id: number;
   name: string;
@@ -875,5 +905,198 @@ export const geopoliticsNews: GeopoliticsArticle[] = [
     bias: 0,
     biasLabel: 'Center',
     tags: ['Middle East', 'Diplomacy', 'Energy'],
+  },
+];
+
+// ============================================================
+// TRACKED INSTRUMENTS (COMMODITY & INDEX TRACKER)
+// ============================================================
+
+export const trackedInstruments: TrackedInstrument[] = [
+  // ---- EQUITY INDICES ----
+  {
+    symbol: 'SPX',
+    name: 'S&P 500',
+    category: 'equity-index',
+    price: 5285.30,
+    dailyChange: 22.10,
+    dailyChangePct: 0.42,
+    weeklyChange: 1.8,
+    monthlyChange: 3.2,
+    ytdChange: 8.7,
+    high52w: 5325.00,
+    low52w: 4103.78,
+    sparkline30d: [5100,5120,5090,5140,5160,5130,5175,5190,5210,5195,5220,5235,5210,5245,5230,5260,5240,5270,5255,5280,5265,5290,5275,5295,5280,5300,5270,5290,5275,5285],
+    momentum: 'bullish',
+    momentumScore: 65,
+    sma20: 5242.00,
+    sma50: 5180.00,
+    rsi14: 62,
+    strategySignal: 'Buy',
+    strategyType: 'momentum',
+    marketNote: 'S&P 500 holding above the 20-day SMA with breadth improving. JPM earnings beat lifted financials, and rate expectations have stabilized. Key resistance at the all-time high of 5,325. A breakout above would confirm the uptrend continuation.',
+    noteCatalyst: 'Bank Earnings + Rate Stability',
+  },
+  {
+    symbol: 'NDX',
+    name: 'Nasdaq 100',
+    category: 'equity-index',
+    price: 18421.00,
+    dailyChange: 124.50,
+    dailyChangePct: 0.68,
+    weeklyChange: 2.4,
+    monthlyChange: 5.1,
+    ytdChange: 12.3,
+    high52w: 18650.00,
+    low52w: 14058.00,
+    sparkline30d: [17400,17500,17350,17600,17700,17550,17800,17900,17850,18000,17950,18100,18050,18200,18150,18300,18250,18100,18200,18350,18300,18450,18200,18350,18400,18500,18350,18420,18380,18421],
+    momentum: 'bullish',
+    momentumScore: 78,
+    sma20: 18150.00,
+    sma50: 17850.00,
+    rsi14: 68,
+    strategySignal: 'Buy',
+    strategyType: 'momentum',
+    marketNote: 'NDX outperforming on AI capex momentum. NVDA, MSFT, and META driving gains as hyperscaler spending projections rise. RSI approaching overbought territory at 68 — watch for mean-reversion if it crosses 70. OpenAI $150B valuation validates the AI trade thesis.',
+    noteCatalyst: 'AI Capex Cycle + OpenAI Valuation',
+  },
+  {
+    symbol: 'DJI',
+    name: 'Dow Jones Industrial',
+    category: 'equity-index',
+    price: 39142.80,
+    dailyChange: -47.20,
+    dailyChangePct: -0.12,
+    weeklyChange: 0.3,
+    monthlyChange: 1.4,
+    ytdChange: 4.2,
+    high52w: 39889.05,
+    low52w: 32327.20,
+    sparkline30d: [38400,38500,38600,38450,38700,38800,38650,38900,38850,39000,38950,39100,38900,39050,39000,39200,39100,39250,39150,39300,39200,39100,39250,39150,39300,39200,39100,39200,39150,39143],
+    momentum: 'neutral',
+    momentumScore: 15,
+    sma20: 39050.00,
+    sma50: 38800.00,
+    rsi14: 52,
+    strategySignal: 'Hold',
+    strategyType: 'none',
+    marketNote: 'DJI treading water as rate-sensitive industrials and healthcare offset financial sector gains. Value-growth rotation stalling. Near the 20-day SMA with no clear directional conviction — classic range-bound behavior. Wait for earnings catalyst from JNJ and CAT this week.',
+    noteCatalyst: 'Range-Bound / Awaiting Catalysts',
+  },
+  {
+    symbol: 'RTY',
+    name: 'Russell 2000',
+    category: 'equity-index',
+    price: 2038.50,
+    dailyChange: -12.30,
+    dailyChangePct: -0.60,
+    weeklyChange: -1.2,
+    monthlyChange: -2.8,
+    ytdChange: -1.5,
+    high52w: 2135.00,
+    low52w: 1636.94,
+    sparkline30d: [2090,2100,2080,2110,2095,2070,2085,2060,2075,2050,2065,2040,2055,2030,2060,2045,2070,2055,2040,2060,2035,2050,2020,2045,2030,2055,2025,2040,2035,2039],
+    momentum: 'bearish',
+    momentumScore: -42,
+    sma20: 2058.00,
+    sma50: 2080.00,
+    rsi14: 38,
+    strategySignal: 'Sell',
+    strategyType: 'momentum',
+    marketNote: 'Small caps continue to underperform as higher-for-longer rates disproportionately impact smaller, more leveraged companies. RTY trading below both the 20-day and 50-day SMA — classic bearish structure. However, RSI at 38 is approaching oversold, which could trigger a mean-reversion bounce.',
+    noteCatalyst: 'Higher-for-Longer Rate Pressure',
+  },
+  // ---- COMMODITIES ----
+  {
+    symbol: 'WTI',
+    name: 'WTI Crude Oil',
+    category: 'commodity',
+    price: 78.20,
+    dailyChange: -1.10,
+    dailyChangePct: -1.39,
+    weeklyChange: -2.8,
+    monthlyChange: -4.5,
+    ytdChange: 9.2,
+    high52w: 93.68,
+    low52w: 63.64,
+    sparkline30d: [82.1,81.5,80.8,80.2,79.5,81.0,80.5,79.8,79.0,78.5,78.8,78.2,79.5,80.1,79.2,78.8,78.0,79.2,78.5,77.8,78.9,79.5,78.2,77.5,78.8,79.1,78.0,77.8,78.5,78.2],
+    momentum: 'bearish',
+    momentumScore: -35,
+    sma20: 79.40,
+    sma50: 80.80,
+    rsi14: 42,
+    strategySignal: 'Hold',
+    strategyType: 'mean-reversion',
+    marketNote: 'WTI slipped below $79 on a surprise EIA inventory build of +3.7M barrels, well above the -1.2M consensus. OPEC+ production cuts continue to provide a floor near $75, but US shale output at 13.2M bpd is offsetting. China Q1 GDP beat may reignite demand, but the market is in wait-and-see mode ahead of the next OPEC+ meeting.',
+    noteCatalyst: 'EIA Inventory Build + OPEC Watch',
+  },
+  {
+    symbol: 'BRN',
+    name: 'Brent Crude Oil',
+    category: 'commodity',
+    price: 82.60,
+    dailyChange: -0.85,
+    dailyChangePct: -1.02,
+    weeklyChange: -2.1,
+    monthlyChange: -3.8,
+    ytdChange: 7.8,
+    high52w: 97.69,
+    low52w: 71.84,
+    sparkline30d: [86.2,85.8,85.1,84.5,85.0,84.2,83.8,84.5,83.2,83.8,84.0,83.5,84.2,83.0,83.5,82.8,83.5,84.0,83.2,82.5,83.1,83.8,82.5,82.0,83.2,83.5,82.0,82.2,82.8,82.6],
+    momentum: 'bearish',
+    momentumScore: -28,
+    sma20: 83.50,
+    sma50: 84.20,
+    rsi14: 44,
+    strategySignal: 'Hold',
+    strategyType: 'mean-reversion',
+    marketNote: 'Brent tracking WTI lower but maintaining a $4.40 premium reflecting tighter Atlantic Basin supply. Iran nuclear talk headlines adding geopolitical premium uncertainty — a deal could release 1.5M bpd of supply, while escalation could spike prices above $90. Key technical support at $80.',
+    noteCatalyst: 'Iran Talks + Atlantic Basin Supply',
+  },
+  {
+    symbol: 'GLD',
+    name: 'Gold',
+    category: 'commodity',
+    price: 2340.00,
+    dailyChange: 7.20,
+    dailyChangePct: 0.31,
+    weeklyChange: 1.2,
+    monthlyChange: 4.8,
+    ytdChange: 13.5,
+    high52w: 2431.55,
+    low52w: 1810.00,
+    sparkline30d: [2220,2230,2245,2260,2250,2275,2290,2280,2305,2295,2315,2330,2310,2325,2340,2320,2335,2350,2340,2355,2345,2360,2340,2350,2335,2345,2330,2340,2335,2340],
+    momentum: 'bullish',
+    momentumScore: 72,
+    sma20: 2318.00,
+    sma50: 2280.00,
+    rsi14: 64,
+    strategySignal: 'Buy',
+    strategyType: 'momentum',
+    marketNote: 'Gold remains in a strong uptrend, driven by central bank buying (China, India, Turkey) and geopolitical safe-haven demand. Trading well above both SMAs. The DXY strength is a headwind, but inflation uncertainty and election-year fiscal concerns provide structural support. Next resistance at $2,400.',
+    noteCatalyst: 'Central Bank Buying + Geopolitical Haven',
+  },
+  {
+    symbol: 'NG',
+    name: 'Natural Gas',
+    category: 'commodity',
+    price: 2.18,
+    dailyChange: 0.12,
+    dailyChangePct: 5.83,
+    weeklyChange: 8.5,
+    monthlyChange: -12.4,
+    ytdChange: -18.2,
+    high52w: 3.63,
+    low52w: 1.52,
+    sparkline30d: [2.50,2.42,2.35,2.28,2.22,2.30,2.18,2.10,2.05,1.98,2.08,2.15,2.05,1.95,2.02,2.12,1.98,2.05,2.15,2.08,1.95,2.00,2.10,2.02,1.92,2.05,2.12,2.08,2.10,2.18],
+    momentum: 'bearish',
+    momentumScore: -55,
+    sma20: 2.08,
+    sma50: 2.25,
+    rsi14: 48,
+    strategySignal: 'Strong Buy',
+    strategyType: 'mean-reversion',
+    marketNote: 'Nat gas bouncing off multi-year lows as summer cooling demand begins and LNG export facility restarts approach. EIA storage report showed +82 Bcf injection (below +95 consensus), tightening the supply picture. Mean-reversion setup: price 40% below 52w high, RSI normalizing from oversold. Key LNG catalyst: Freeport expansion commissioning in June.',
+    noteCatalyst: 'EIA Storage Beat + LNG Export Restart',
   },
 ];

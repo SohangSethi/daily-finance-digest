@@ -61,12 +61,12 @@ export default function KPICard({ data, variant = 'macro' }: KPICardProps) {
     <>
       <div className="text-kpi-label truncate">{data.name}</div>
 
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-kpi-value text-[var(--bb-text-primary)]">
+      <div className="flex items-baseline gap-1.5 min-w-0 overflow-hidden">
+        <span className="text-kpi-value text-[var(--bb-text-primary)] truncate">
           {data.value}
-          {data.unit && <span className="text-[14px] font-normal text-[var(--bb-text-secondary)] ml-0.5">{data.unit}</span>}
+          {data.unit && <span className="text-[13px] font-normal text-[var(--bb-text-secondary)] ml-0.5">{data.unit}</span>}
         </span>
-        <span className={`font-mono text-[12px] font-semibold ${directionColor}`}>
+        <span className={`font-mono text-[11px] font-semibold flex-shrink-0 ${directionColor}`}>
           {arrow}{changeText}
         </span>
       </div>
@@ -93,7 +93,7 @@ export default function KPICard({ data, variant = 'macro' }: KPICardProps) {
         href={googleFinanceUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="group bb-card px-3 py-3 min-w-[150px] flex flex-col gap-1.5 no-underline cursor-pointer"
+        className="group bb-card px-3 py-3 min-w-[180px] max-w-[220px] flex-shrink-0 flex flex-col gap-1.5 no-underline cursor-pointer overflow-hidden"
         title={`View ${data.name} on Google Finance`}
       >
         {cardContent}
@@ -102,7 +102,7 @@ export default function KPICard({ data, variant = 'macro' }: KPICardProps) {
   }
 
   return (
-    <div className="bb-card px-3 py-3 min-w-[150px] flex flex-col gap-1.5">
+    <div className="bb-card px-3 py-3 min-w-[180px] max-w-[220px] flex-shrink-0 flex flex-col gap-1.5 overflow-hidden">
       {cardContent}
     </div>
   );

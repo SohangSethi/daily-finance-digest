@@ -11,6 +11,7 @@ import ChangeBadge from '@/components/ChangeBadge';
 import ThemeToggle from '@/components/ThemeToggle';
 import StocksPanel from '@/components/StocksPanel';
 import GeopoliticsSection from '@/components/GeopoliticsSection';
+import CommodityTracker from '@/components/CommodityTracker';
 
 // Fallback mock data (used if API fails)
 import {
@@ -26,9 +27,10 @@ import {
   bisPapersMock,
   trendingStocks as mockStocks,
   geopoliticsNews as mockGeopolitics,
+  trackedInstruments as mockTracked,
 } from '@/lib/mockData';
 
-import type { TrendingStock, GeopoliticsArticle } from '@/lib/mockData';
+import type { TrendingStock, GeopoliticsArticle, TrackedInstrument } from '@/lib/mockData';
 
 interface BISPaper {
   id: number;
@@ -79,6 +81,7 @@ export default function HomePage() {
     aiMarketSummary: string;
     trendingStocks: TrendingStock[];
     geopoliticsNews: GeopoliticsArticle[];
+    trackedInstruments: TrackedInstrument[];
     lastRefreshed: string;
     isLive: boolean;
   } | null>(null);
@@ -163,6 +166,7 @@ export default function HomePage() {
           aiMarketSummary: json.marketSummary || aiMarketSummary,
           trendingStocks: json.trendingStocks || mockStocks,
           geopoliticsNews: json.geopoliticsNews || mockGeopolitics,
+          trackedInstruments: json.trackedInstruments || mockTracked,
           lastRefreshed: json.lastRefreshed || new Date().toISOString(),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           isLive: (json.macro?.length > 0 && !adaptedMacro.every((m: any) => m.value === '—')) || (json.markets?.length > 0 && !adaptedMarket.every((m: any) => m.value === '—')),
@@ -182,6 +186,7 @@ export default function HomePage() {
           aiMarketSummary,
           trendingStocks: mockStocks,
           geopoliticsNews: mockGeopolitics,
+          trackedInstruments: mockTracked,
           lastRefreshed: new Date().toISOString(),
           isLive: false,
         });
@@ -362,6 +367,11 @@ export default function HomePage() {
                   }
                 </div>
               </div>
+            </section>
+
+            {/* COMMODITY & INDEX TRACKER */}
+            <section className="mb-6">
+              <CommodityTracker instruments={data?.trackedInstruments || mockTracked} />
             </section>
 
             {/* MAIN GRID: 8/4 split */}
