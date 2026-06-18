@@ -32,11 +32,10 @@ const FINANCE_RSS_FEEDS = [
   { url: 'https://www.goldmansachs.com/insights/rss', name: 'Goldman Sachs', slug: 'gs' },
   { url: 'https://www.jpmorganchase.com/feeds/news', name: 'JPMorgan Chase', slug: 'jpm' },
   // Financial News
-  { url: 'https://feeds.reuters.com/reuters/businessNews', name: 'Reuters Business', slug: 'reuters' },
-  { url: 'https://feeds.reuters.com/Reuters/worldNews', name: 'Reuters World', slug: 'reuters-world' },
-  { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', name: 'CNBC', slug: 'cnbc' },
+  { url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml', name: 'WSJ Business', slug: 'wsj' },
+  { url: 'https://finance.yahoo.com/news/rssindex', name: 'Yahoo Finance', slug: 'yahoo' },
+  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664', name: 'CNBC', slug: 'cnbc' },
   { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', name: 'MarketWatch', slug: 'mw' },
-  { url: 'https://feeds.bloomberg.com/markets/news.rss', name: 'Bloomberg Markets', slug: 'bbg' },
   // Geopolitics
   { url: 'https://www.cfr.org/rss/global', name: 'Council on Foreign Relations', slug: 'cfr' },
   { url: 'https://www.foreignaffairs.com/rss.xml', name: 'Foreign Affairs', slug: 'fa' },
@@ -87,7 +86,16 @@ function extractTag(xml: string, tag: string): string {
 
   const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
   const match = xml.match(regex);
-  return match ? match[1].trim() : '';
+  if (match && match[1].trim()) return match[1].trim();
+
+  // Handle self-closing tags like <link href="..." />
+  if (tag === 'link') {
+    const hrefRegex = /<link[^>]*href=["']([^"']+)["'][^>]*\/?>/i;
+    const hrefMatch = xml.match(hrefRegex);
+    if (hrefMatch) return hrefMatch[1].trim();
+  }
+
+  return '';
 }
 
 function cleanHtml(text: string): string {
@@ -172,12 +180,36 @@ export async function fetchAllFinanceNews(): Promise<RSSItem[]> {
 
 import { PortfolioHolding } from './portfolio';
 
+// Fallback curation if OpenAI fails or key is missing
+function fallbackCuration(articles: RSSItem[]): NewsArticle[] {
+  return articles.slice(0, 10).map((a, i) => ({
+    id: i + 1,
+    rank: i + 1,
+    title: a.title,
+    source: a.source,
+    sourceSlug: a.sourceSlug,
+    url: a.link,
+    publishedAt: a.pubDate,
+    snippet: a.description,
+    summary: a.description.slice(0, 150) + '...',
+    whyRead: `Top headline from ${a.source}`,
+    whyMatters: `Market moving news from ${a.source}`,
+    marketImpact: 'Potential impact across sectors related to this headline.',
+    studentWhyRead: `Major news from ${a.source}`,
+    studentWhyMatters: 'General market news.',
+    primaryTopic: 'Markets',
+    score: 80 - i,
+    affectedTickers: [],
+    riskFlags: [],
+  }));
+}
+
 // Use GPT-4o to curate top 10 finance reads
 export async function curateFinanceNews(articles: RSSItem[], portfolioHoldings: PortfolioHolding[] = []): Promise<NewsArticle[]> {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey || articles.length === 0) {
-    return [];
+    return fallbackCuration(articles);
   }
 
   // Build article list for GPT-4o
@@ -223,6 +255,9 @@ For each of the 10 stories, respond in this exact JSON format (array of objects)
 
 Prioritize: (1) market-moving news, (2) central bank/policy, (3) geopolitics affecting markets, (4) major earnings/M&A. Ensure topic diversity.
 Return ONLY the JSON array, no markdown.`
+        }, {
+          role: 'user',
+          content: articleList
         }],
         temperature: 0.3,
         max_tokens: 2000,
@@ -231,7 +266,7 @@ Return ONLY the JSON array, no markdown.`
 
     if (!response.ok) {
       console.error('GPT-4o curation failed:', response.status);
-      throw new Error('GPT-4o failed');
+      return fallbackCuration(articles);
     }
 
     const data = await response.json();
@@ -266,8 +301,8 @@ Return ONLY the JSON array, no markdown.`
     });
   } catch (error) {
     console.error('OpenAI curation error:', error);
-    // Fallback: return empty so API route uses mockData
-    return [];
+    // Fallback: return raw articles mapped to NewsArticle
+    return fallbackCuration(articles);
   }
 }
 
