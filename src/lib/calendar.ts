@@ -135,6 +135,16 @@ const ismDates: EconomicEvent[] = [
   { id: 604, name: 'ISM Manufacturing', type: 'ism', date: '2026-08-03', impactLevel: 'medium' },
   { id: 605, name: 'ISM Manufacturing', type: 'ism', date: '2026-09-01', impactLevel: 'medium' },
   { id: 606, name: 'ISM Manufacturing', type: 'ism', date: '2026-10-01', impactLevel: 'medium' },
+  { id: 607, name: 'ISM Manufacturing', type: 'ism', date: '2026-11-02', impactLevel: 'medium' },
+  { id: 608, name: 'ISM Manufacturing', type: 'ism', date: '2026-12-01', impactLevel: 'medium' },
+];
+
+// ============================================================
+// Treasury Refunding Dates 2026
+// ============================================================
+const refundingDates: EconomicEvent[] = [
+  { id: 701, name: 'Treasury Refunding Announcement', type: 'refunding', date: '2026-07-29', impactLevel: 'medium' },
+  { id: 702, name: 'Treasury Refunding Announcement', type: 'refunding', date: '2026-10-28', impactLevel: 'medium' },
 ];
 
 // ============================================================
@@ -147,6 +157,7 @@ export const allEconomicEvents: EconomicEvent[] = [
   ...payrollDates,
   ...gdpDates,
   ...ismDates,
+  ...refundingDates,
 ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 // Get upcoming events (future only)
@@ -169,7 +180,8 @@ export function getUpcomingEvents(limit: number = 10): (EconomicEvent & { daysUn
 // Q1 2026 Earnings Season (Apr/May reporting season)
 // ============================================================
 export const earningsCalendar: EarningsEvent[] = ([
-  // Big Tech — Q1 2026 reporting
+  // ===== Q1 2026 Earnings Season (Apr/May reporting) =====
+  // Big Tech
   { company: 'Tesla', ticker: 'TSLA', reportDate: '2026-04-22', reportTime: 'after_close' as const, epsEstimate: '$0.68', sector: 'Technology' },
   { company: 'Alphabet', ticker: 'GOOGL', reportDate: '2026-04-28', reportTime: 'after_close' as const, epsEstimate: '$2.12', sector: 'Technology' },
   { company: 'Microsoft', ticker: 'MSFT', reportDate: '2026-04-29', reportTime: 'after_close' as const, epsEstimate: '$3.15', sector: 'Technology' },
@@ -177,29 +189,73 @@ export const earningsCalendar: EarningsEvent[] = ([
   { company: 'Amazon', ticker: 'AMZN', reportDate: '2026-05-07', reportTime: 'after_close' as const, epsEstimate: '$1.22', sector: 'Technology' },
   { company: 'Apple', ticker: 'AAPL', reportDate: '2026-05-07', reportTime: 'after_close' as const, epsEstimate: '$1.65', sector: 'Technology' },
   { company: 'NVIDIA', ticker: 'NVDA', reportDate: '2026-05-27', reportTime: 'after_close' as const, epsEstimate: '$0.92', sector: 'Technology' },
-
   // Financials
   { company: 'JPMorgan Chase', ticker: 'JPM', reportDate: '2026-04-14', reportTime: 'before_market' as const, epsEstimate: '$4.55', sector: 'Financials' },
   { company: 'Goldman Sachs', ticker: 'GS', reportDate: '2026-04-15', reportTime: 'before_market' as const, epsEstimate: '$13.10', sector: 'Financials' },
   { company: 'Morgan Stanley', ticker: 'MS', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$2.15', sector: 'Financials' },
   { company: 'Bank of America', ticker: 'BAC', reportDate: '2026-04-15', reportTime: 'before_market' as const, epsEstimate: '$0.91', sector: 'Financials' },
   { company: 'Citigroup', ticker: 'C', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$2.05', sector: 'Financials' },
-
   // Healthcare
   { company: 'Johnson & Johnson', ticker: 'JNJ', reportDate: '2026-04-21', reportTime: 'before_market' as const, epsEstimate: '$2.72', sector: 'Healthcare' },
   { company: 'UnitedHealth', ticker: 'UNH', reportDate: '2026-04-16', reportTime: 'before_market' as const, epsEstimate: '$7.65', sector: 'Healthcare' },
-
   // Consumer
   { company: 'Procter & Gamble', ticker: 'PG', reportDate: '2026-04-22', reportTime: 'before_market' as const, epsEstimate: '$1.45', sector: 'Consumer' },
   { company: 'Coca-Cola', ticker: 'KO', reportDate: '2026-04-28', reportTime: 'before_market' as const, epsEstimate: '$0.78', sector: 'Consumer' },
-
-  // Industrials / Other
+  // Other
   { company: 'ExxonMobil', ticker: 'XOM', reportDate: '2026-05-01', reportTime: 'before_market' as const, epsEstimate: '$2.18', sector: 'Energy' },
   { company: 'Visa', ticker: 'V', reportDate: '2026-04-28', reportTime: 'after_close' as const, epsEstimate: '$2.85', sector: 'Financials' },
+
+  // ===== Q2 2026 Earnings Season (Jul/Aug reporting) =====
+  // Financials
+  { company: 'JPMorgan Chase', ticker: 'JPM', reportDate: '2026-07-14', reportTime: 'before_market' as const, epsEstimate: '$4.80', sector: 'Financials' },
+  { company: 'Goldman Sachs', ticker: 'GS', reportDate: '2026-07-14', reportTime: 'before_market' as const, epsEstimate: '$13.50', sector: 'Financials' },
+  { company: 'Bank of America', ticker: 'BAC', reportDate: '2026-07-15', reportTime: 'before_market' as const, epsEstimate: '$0.95', sector: 'Financials' },
+  { company: 'Morgan Stanley', ticker: 'MS', reportDate: '2026-07-15', reportTime: 'before_market' as const, epsEstimate: '$2.25', sector: 'Financials' },
+  { company: 'Citigroup', ticker: 'C', reportDate: '2026-07-15', reportTime: 'before_market' as const, epsEstimate: '$2.15', sector: 'Financials' },
+  // Healthcare
+  { company: 'UnitedHealth', ticker: 'UNH', reportDate: '2026-07-15', reportTime: 'before_market' as const, epsEstimate: '$7.85', sector: 'Healthcare' },
+  { company: 'Johnson & Johnson', ticker: 'JNJ', reportDate: '2026-07-21', reportTime: 'before_market' as const, epsEstimate: '$2.80', sector: 'Healthcare' },
+  // Consumer
+  { company: 'Coca-Cola', ticker: 'KO', reportDate: '2026-07-21', reportTime: 'before_market' as const, epsEstimate: '$0.82', sector: 'Consumer' },
+  { company: 'Procter & Gamble', ticker: 'PG', reportDate: '2026-07-22', reportTime: 'before_market' as const, epsEstimate: '$1.50', sector: 'Consumer' },
+  // Big Tech
+  { company: 'Tesla', ticker: 'TSLA', reportDate: '2026-07-22', reportTime: 'after_close' as const, epsEstimate: '$0.75', sector: 'Technology' },
+  { company: 'Alphabet', ticker: 'GOOGL', reportDate: '2026-07-22', reportTime: 'after_close' as const, epsEstimate: '$2.25', sector: 'Technology' },
+  { company: 'Visa', ticker: 'V', reportDate: '2026-07-28', reportTime: 'after_close' as const, epsEstimate: '$2.95', sector: 'Financials' },
+  { company: 'Microsoft', ticker: 'MSFT', reportDate: '2026-07-29', reportTime: 'after_close' as const, epsEstimate: '$3.35', sector: 'Technology' },
+  { company: 'Meta Platforms', ticker: 'META', reportDate: '2026-07-29', reportTime: 'after_close' as const, epsEstimate: '$5.40', sector: 'Technology' },
+  { company: 'Apple', ticker: 'AAPL', reportDate: '2026-07-30', reportTime: 'after_close' as const, epsEstimate: '$1.45', sector: 'Technology' },
+  { company: 'Amazon', ticker: 'AMZN', reportDate: '2026-07-30', reportTime: 'after_close' as const, epsEstimate: '$1.35', sector: 'Technology' },
+  { company: 'ExxonMobil', ticker: 'XOM', reportDate: '2026-07-31', reportTime: 'before_market' as const, epsEstimate: '$2.25', sector: 'Energy' },
+  { company: 'NVIDIA', ticker: 'NVDA', reportDate: '2026-08-26', reportTime: 'after_close' as const, epsEstimate: '$1.05', sector: 'Technology' },
+
+  // ===== Q3 2026 Earnings Season (Oct/Nov reporting) =====
+  // Financials
+  { company: 'JPMorgan Chase', ticker: 'JPM', reportDate: '2026-10-13', reportTime: 'before_market' as const, epsEstimate: '$4.90', sector: 'Financials' },
+  { company: 'Goldman Sachs', ticker: 'GS', reportDate: '2026-10-14', reportTime: 'before_market' as const, epsEstimate: '$13.75', sector: 'Financials' },
+  { company: 'Bank of America', ticker: 'BAC', reportDate: '2026-10-14', reportTime: 'before_market' as const, epsEstimate: '$0.98', sector: 'Financials' },
+  { company: 'Morgan Stanley', ticker: 'MS', reportDate: '2026-10-15', reportTime: 'before_market' as const, epsEstimate: '$2.30', sector: 'Financials' },
+  { company: 'Citigroup', ticker: 'C', reportDate: '2026-10-15', reportTime: 'before_market' as const, epsEstimate: '$2.20', sector: 'Financials' },
+  // Healthcare
+  { company: 'UnitedHealth', ticker: 'UNH', reportDate: '2026-10-15', reportTime: 'before_market' as const, epsEstimate: '$8.00', sector: 'Healthcare' },
+  { company: 'Johnson & Johnson', ticker: 'JNJ', reportDate: '2026-10-20', reportTime: 'before_market' as const, epsEstimate: '$2.85', sector: 'Healthcare' },
+  // Consumer
+  { company: 'Coca-Cola', ticker: 'KO', reportDate: '2026-10-21', reportTime: 'before_market' as const, epsEstimate: '$0.80', sector: 'Consumer' },
+  { company: 'Procter & Gamble', ticker: 'PG', reportDate: '2026-10-21', reportTime: 'before_market' as const, epsEstimate: '$1.52', sector: 'Consumer' },
+  // Big Tech
+  { company: 'Tesla', ticker: 'TSLA', reportDate: '2026-10-21', reportTime: 'after_close' as const, epsEstimate: '$0.80', sector: 'Technology' },
+  { company: 'Alphabet', ticker: 'GOOGL', reportDate: '2026-10-27', reportTime: 'after_close' as const, epsEstimate: '$2.35', sector: 'Technology' },
+  { company: 'Visa', ticker: 'V', reportDate: '2026-10-27', reportTime: 'after_close' as const, epsEstimate: '$3.05', sector: 'Financials' },
+  { company: 'Microsoft', ticker: 'MSFT', reportDate: '2026-10-28', reportTime: 'after_close' as const, epsEstimate: '$3.45', sector: 'Technology' },
+  { company: 'Meta Platforms', ticker: 'META', reportDate: '2026-10-28', reportTime: 'after_close' as const, epsEstimate: '$5.60', sector: 'Technology' },
+  { company: 'Amazon', ticker: 'AMZN', reportDate: '2026-10-29', reportTime: 'after_close' as const, epsEstimate: '$1.42', sector: 'Technology' },
+  { company: 'Apple', ticker: 'AAPL', reportDate: '2026-10-29', reportTime: 'after_close' as const, epsEstimate: '$1.70', sector: 'Technology' },
+  { company: 'ExxonMobil', ticker: 'XOM', reportDate: '2026-10-30', reportTime: 'before_market' as const, epsEstimate: '$2.30', sector: 'Energy' },
+  { company: 'NVIDIA', ticker: 'NVDA', reportDate: '2026-11-25', reportTime: 'after_close' as const, epsEstimate: '$1.15', sector: 'Technology' },
 ] as EarningsEvent[]).sort((a, b) => new Date(a.reportDate).getTime() - new Date(b.reportDate).getTime());
 
 // Get earnings within a date range
-export function getUpcomingEarnings(daysAhead: number = 14): (EarningsEvent & { displayDate: string; dayOfWeek: string; daysUntil: number })[] {
+export function getUpcomingEarnings(daysAhead: number = 60): (EarningsEvent & { displayDate: string; dayOfWeek: string; daysUntil: number })[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const cutoff = new Date(today.getTime() + daysAhead * 24 * 60 * 60 * 1000);

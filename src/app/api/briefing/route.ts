@@ -23,7 +23,7 @@ import {
   trackedInstruments,
 } from '@/lib/mockData';
 
-export const revalidate = 300; // Revalidate every 5 minutes
+export const revalidate = 3600; // Revalidate every hour
 
 export async function GET() {
   try {
@@ -100,7 +100,7 @@ export async function GET() {
 
     return NextResponse.json(briefing, {
       headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200',
       },
     });
   } catch (error) {

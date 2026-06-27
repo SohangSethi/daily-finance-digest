@@ -93,7 +93,9 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchBriefing() {
       try {
-        const res = await fetch('/api/briefing');
+        // Add cache-busting param on refetch to avoid stale data
+        const cacheBuster = `?t=${Date.now()}`;
+        const res = await fetch(`/api/briefing${cacheBuster}`);
         const json = await res.json();
 
         // Adapt the API response to match our component props
@@ -195,8 +197,35 @@ export default function HomePage() {
       }
     }
 
+    // Check if current time is within active hours (weekdays 5am–11pm ET)
+    function isActiveHours(): boolean {
+      const now = new Date();
+      // Convert to ET (UTC-4 or UTC-5 depending on DST)
+      const etString = now.toLocaleString('en-US', { timeZone: 'America/New_York' });
+      const etDate = new Date(etString);
+      const day = etDate.getDay(); // 0=Sun, 6=Sat
+      const hour = etDate.getHours();
+      const isWeekday = day >= 1 && day <= 5;
+      const isDuringHours = hour >= 5 && hour < 23;
+      return isWeekday && isDuringHours;
+    }
+
+    // Initial fetch
     fetchBriefing();
+
+    // Auto-refresh every 60 minutes during active hours (weekdays 5am–11pm ET)
+    const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour in ms
+    const intervalId = setInterval(() => {
+      if (isActiveHours()) {
+        console.log('[BankerBrief] Auto-refreshing data...');
+        fetchBriefing();
+      }
+    }, REFRESH_INTERVAL);
+
+    return () => clearInterval(intervalId);
   }, []);
+
+
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 

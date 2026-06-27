@@ -27,18 +27,19 @@ export interface NewsArticle {
 
 // RSS Feed URLs for finance news
 const FINANCE_RSS_FEEDS = [
-  // Bank Newsrooms
-  { url: 'https://www.morganstanley.com/ideas/rss', name: 'Morgan Stanley', slug: 'ms' },
-  { url: 'https://www.goldmansachs.com/insights/rss', name: 'Goldman Sachs', slug: 'gs' },
-  { url: 'https://www.jpmorganchase.com/feeds/news', name: 'JPMorgan Chase', slug: 'jpm' },
   // Financial News
   { url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml', name: 'WSJ Business', slug: 'wsj' },
+  { url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml', name: 'WSJ Markets', slug: 'wsj-markets' },
   { url: 'https://finance.yahoo.com/news/rssindex', name: 'Yahoo Finance', slug: 'yahoo' },
   { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664', name: 'CNBC', slug: 'cnbc' },
+  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147', name: 'CNBC Economy', slug: 'cnbc-econ' },
   { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', name: 'MarketWatch', slug: 'mw' },
+  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', name: 'MarketWatch Pulse', slug: 'mw-pulse' },
+  { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', name: 'BBC Business', slug: 'bbc' },
   // Geopolitics
-  { url: 'https://www.cfr.org/rss/global', name: 'Council on Foreign Relations', slug: 'cfr' },
+  { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World', slug: 'bbc-world' },
   { url: 'https://www.foreignaffairs.com/rss.xml', name: 'Foreign Affairs', slug: 'fa' },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', name: 'NYT Business', slug: 'nyt' },
 ];
 
 interface RSSItem {
@@ -306,12 +307,42 @@ Return ONLY the JSON array, no markdown.`
   }
 }
 
+// Generate a headline-based market summary without AI
+function generateHeadlineSummary(articles: RSSItem[]): string {
+  if (articles.length === 0) {
+    return 'Market data is currently being refreshed. Check back shortly for the latest headlines and analysis.';
+  }
+
+  // Pick the top 3 most recent headlines from different sources
+  const seen = new Set<string>();
+  const topHeadlines: string[] = [];
+  for (const a of articles) {
+    if (!seen.has(a.source) && topHeadlines.length < 3) {
+      seen.add(a.source);
+      // Truncate long titles
+      const title = a.title.length > 80 ? a.title.slice(0, 77) + '...' : a.title;
+      topHeadlines.push(`${title} (${a.source})`);
+    }
+  }
+
+  const now = new Date();
+  const timeLabel = now.getHours() < 12 ? 'this morning' : now.getHours() < 17 ? 'this afternoon' : 'this evening';
+  const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+  return `Top headlines ${timeLabel}, ${dateStr}: ${topHeadlines.join(' | ')}. Refresh hourly for updated coverage.`;
+}
+
 // Generate AI market summary focused on geopolitics impact
 export async function generateMarketSummary(articles: RSSItem[]): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
 
-  if (!apiKey || articles.length === 0) {
-    return null;
+  // If no API key, generate a headline-based summary instead of returning null
+  if (!apiKey) {
+    return generateHeadlineSummary(articles);
+  }
+
+  if (articles.length === 0) {
+    return 'No live news feeds available at the moment. Data will refresh automatically.';
   }
 
   const headlines = articles.slice(0, 20).map(a => `• ${a.title} (${a.source})`).join('\n');
@@ -343,6 +374,7 @@ Write ONLY the summary, no formatting or labels. Keep it under 60 words.`
     const data = await response.json();
     return data.choices[0].message.content.trim();
   } catch {
-    return 'AI market summary temporarily unavailable. Check back shortly.';
+    // Fall back to headline summary if AI fails
+    return generateHeadlineSummary(articles);
   }
 }
