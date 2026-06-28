@@ -26,20 +26,22 @@ export interface NewsArticle {
 }
 
 // RSS Feed URLs for finance news
+// priority: higher = more likely to contain market-relevant content
 const FINANCE_RSS_FEEDS = [
-  // Financial News
-  { url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml', name: 'WSJ Business', slug: 'wsj' },
-  { url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml', name: 'WSJ Markets', slug: 'wsj-markets' },
-  { url: 'https://finance.yahoo.com/news/rssindex', name: 'Yahoo Finance', slug: 'yahoo' },
-  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664', name: 'CNBC', slug: 'cnbc' },
-  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147', name: 'CNBC Economy', slug: 'cnbc-econ' },
-  { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', name: 'MarketWatch', slug: 'mw' },
-  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', name: 'MarketWatch Pulse', slug: 'mw-pulse' },
-  { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', name: 'BBC Business', slug: 'bbc' },
-  // Geopolitics
-  { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World', slug: 'bbc-world' },
-  { url: 'https://www.foreignaffairs.com/rss.xml', name: 'Foreign Affairs', slug: 'fa' },
-  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', name: 'NYT Business', slug: 'nyt' },
+  // Tier 1: Pure markets & finance
+  { url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml', name: 'WSJ Markets', slug: 'wsj-markets', priority: 10 },
+  { url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml', name: 'WSJ Business', slug: 'wsj', priority: 9 },
+  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664', name: 'CNBC', slug: 'cnbc', priority: 9 },
+  { url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147', name: 'CNBC Economy', slug: 'cnbc-econ', priority: 9 },
+  { url: 'https://finance.yahoo.com/news/rssindex', name: 'Yahoo Finance', slug: 'yahoo', priority: 8 },
+  { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', name: 'MarketWatch', slug: 'mw', priority: 8 },
+  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', name: 'MarketWatch Pulse', slug: 'mw-pulse', priority: 8 },
+  // Tier 2: Business news with some market relevance
+  { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', name: 'BBC Business', slug: 'bbc', priority: 5 },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml', name: 'NYT Business', slug: 'nyt', priority: 5 },
+  // Tier 3: Geopolitics (market impact via macro risk)
+  { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', name: 'BBC World', slug: 'bbc-world', priority: 3 },
+  { url: 'https://www.foreignaffairs.com/rss.xml', name: 'Foreign Affairs', slug: 'fa', priority: 3 },
 ];
 
 interface RSSItem {
@@ -181,28 +183,171 @@ export async function fetchAllFinanceNews(): Promise<RSSItem[]> {
 
 import { PortfolioHolding } from './portfolio';
 
+// ============================================================
+// Smart fallback curation (no AI needed)
+// Scores articles by finance/market relevance using keyword matching
+// ============================================================
+
+// Keywords that signal market-relevant content, grouped by topic
+const MARKET_KEYWORDS: Record<string, { keywords: string[]; weight: number }> = {
+  'Central Banks': { keywords: ['fed', 'fomc', 'rate cut', 'rate hike', 'interest rate', 'powell', 'monetary policy', 'central bank', 'ecb', 'boj', 'inflation target', 'quantitative', 'tightening', 'easing', 'dovish', 'hawkish', 'basis points', 'fed funds'], weight: 15 },
+  'Macro': { keywords: ['cpi', 'inflation', 'gdp', 'jobs report', 'nonfarm', 'payrolls', 'unemployment', 'pce', 'consumer spending', 'retail sales', 'housing starts', 'pmi', 'ism', 'recession', 'economic growth', 'labor market', 'wage growth', 'treasury yield', 'yield curve', 'bond market'], weight: 14 },
+  'Earnings': { keywords: ['earnings', 'revenue', 'profit', 'eps', 'quarterly results', 'beat estimates', 'missed expectations', 'guidance', 'outlook', 'fiscal quarter', 'revenue growth', 'operating income', 'net income', 'margin'], weight: 13 },
+  'Markets': { keywords: ['s&p 500', 'nasdaq', 'dow jones', 'stock market', 'rally', 'selloff', 'bull market', 'bear market', 'correction', 'market cap', 'ipo', 'spac', 'trading', 'volatility', 'vix', 'futures', 'options', 'equities', 'shares', 'wall street', 'investors'], weight: 12 },
+  'M&A': { keywords: ['merger', 'acquisition', 'takeover', 'buyout', 'deal', 'private equity', 'leveraged', 'spin-off', 'divestiture', 'antitrust'], weight: 12 },
+  'Commodities': { keywords: ['oil', 'crude', 'wti', 'brent', 'gold', 'silver', 'copper', 'natural gas', 'opec', 'commodity', 'commodity prices', 'energy prices'], weight: 11 },
+  'Regulation': { keywords: ['sec', 'regulation', 'compliance', 'antitrust', 'ftc', 'doj', 'legislation', 'banking regulation', 'capital requirements', 'dodd-frank', 'financial regulation', 'crypto regulation', 'fintech'], weight: 10 },
+  'Geopolitics': { keywords: ['tariff', 'trade war', 'sanctions', 'geopolitical', 'china', 'russia', 'ukraine', 'taiwan', 'middle east', 'nato', 'embargo', 'export controls', 'supply chain', 'trade deal', 'g7', 'g20'], weight: 9 },
+};
+
+// Common ticker symbols to detect in article text
+const COMMON_TICKERS: Record<string, string> = {
+  'apple': 'AAPL', 'microsoft': 'MSFT', 'google': 'GOOGL', 'alphabet': 'GOOGL',
+  'amazon': 'AMZN', 'meta': 'META', 'facebook': 'META', 'tesla': 'TSLA',
+  'nvidia': 'NVDA', 'jpmorgan': 'JPM', 'goldman sachs': 'GS', 'goldman': 'GS',
+  'morgan stanley': 'MS', 'bank of america': 'BAC', 'citigroup': 'C', 'citi': 'C',
+  'visa': 'V', 'exxon': 'XOM', 'chevron': 'CVX', 'boeing': 'BA',
+  'disney': 'DIS', 'netflix': 'NFLX', 'amd': 'AMD', 'intel': 'INTC',
+  'walmart': 'WMT', 'target': 'TGT', 'costco': 'COST',
+  'unitedhealth': 'UNH', 'johnson & johnson': 'JNJ', 'pfizer': 'PFE',
+  'berkshire': 'BRK.B', 'coca-cola': 'KO', 'pepsi': 'PEP',
+};
+
+// Topic-specific "why read" and "why matters" templates for bankers
+const TOPIC_CONTEXT: Record<string, { whyRead: string; whyMatters: string; studentWhyRead: string; studentWhyMatters: string }> = {
+  'Central Banks': {
+    whyRead: 'Central bank policy directly drives rates, credit spreads, and asset valuations across your book.',
+    whyMatters: 'Fed decisions and forward guidance move Treasury yields, affect LBO financing windows, and reprices duration risk across fixed income portfolios.',
+    studentWhyRead: 'Central banks control interest rates, which affect everything from mortgage costs to stock prices.',
+    studentWhyMatters: 'When the Federal Reserve changes interest rates, it ripples through the entire economy — affecting borrowing costs for businesses and consumers alike.',
+  },
+  'Macro': {
+    whyRead: 'Key economic data release — watch for market repricing of rate expectations and sector rotation.',
+    whyMatters: 'Economic indicators drive Fed policy expectations, credit conditions, and sector allocation. Strong/weak data can trigger rapid position adjustments.',
+    studentWhyRead: 'This economic data tells us how healthy the economy is right now.',
+    studentWhyMatters: 'Economic reports like jobs data and inflation numbers help everyone understand if the economy is growing or slowing, which affects job security and prices.',
+  },
+  'Earnings': {
+    whyRead: 'Earnings results and guidance drive single-stock moves and set tone for sector peers.',
+    whyMatters: 'Earnings beats/misses affect not just the reporting company but set expectations for sector peers. Watch guidance revisions for forward positioning.',
+    studentWhyRead: 'A major company just reported how much money it made — this moves its stock price.',
+    studentWhyMatters: 'When big companies report earnings, it tells investors whether the company is doing better or worse than expected, which directly moves stock prices.',
+  },
+  'Markets': {
+    whyRead: 'Broad market move — check positioning, hedges, and exposure across your portfolio.',
+    whyMatters: 'Market-wide moves affect correlation and beta exposure. Monitor VIX, breadth, and sector leadership for tactical adjustments.',
+    studentWhyRead: 'The stock market is making a significant move that affects many investors.',
+    studentWhyMatters: 'When the overall market moves significantly up or down, it affects retirement accounts, investment portfolios, and overall economic confidence.',
+  },
+  'M&A': {
+    whyRead: 'M&A activity signals deal flow, spreads, and sector consolidation trends relevant to advisory and trading.',
+    whyMatters: 'Deal announcements move target/acquirer stocks, affect merger arb spreads, and signal broader sector consolidation themes. Watch financing terms.',
+    studentWhyRead: 'A major deal between companies is happening, which can reshape an industry.',
+    studentWhyMatters: 'When companies merge or acquire each other, it can change competition in an industry, affect jobs, and move stock prices significantly.',
+  },
+  'Commodities': {
+    whyRead: 'Commodity price moves affect energy sector earnings, inflation expectations, and EM currencies.',
+    whyMatters: 'Oil and metals prices flow through to CPI components, energy sector margins, and commodity-linked EM sovereign risk. Monitor OPEC dynamics.',
+    studentWhyRead: 'Oil or commodity prices are moving, which affects gas prices and inflation.',
+    studentWhyMatters: 'Commodity prices affect what you pay for gas, food, and energy — when they rise, companies pass costs to consumers, fueling inflation.',
+  },
+  'Regulation': {
+    whyRead: 'Regulatory changes affect compliance costs, deal structures, and sector valuations.',
+    whyMatters: 'New regulations can reshape competitive dynamics, increase capital requirements, or open/close market opportunities. Watch for impact on banking and fintech.',
+    studentWhyRead: 'New rules or regulations could change how certain industries operate.',
+    studentWhyMatters: 'Government regulations can force companies to change how they do business, affecting their profits and the services available to consumers.',
+  },
+  'Geopolitics': {
+    whyRead: 'Geopolitical risk affects commodity flows, sanctions exposure, and cross-border deal activity.',
+    whyMatters: 'Geopolitical tensions drive risk premia, safe-haven flows, and can disrupt supply chains. Watch for sanctions, trade barriers, and defense spending shifts.',
+    studentWhyRead: 'International events are creating uncertainty that could affect financial markets.',
+    studentWhyMatters: 'When countries have conflicts or tensions, it can disrupt trade, raise energy prices, and create uncertainty that makes markets nervous.',
+  },
+};
+
+function scoreArticleRelevance(title: string, description: string, sourceSlug: string): { score: number; topic: string; tickers: string[] } {
+  const text = `${title} ${description}`.toLowerCase();
+  let bestScore = 0;
+  let bestTopic = 'Markets';
+
+  // Score against each topic category
+  for (const [topic, { keywords, weight }] of Object.entries(MARKET_KEYWORDS)) {
+    let topicScore = 0;
+    for (const kw of keywords) {
+      if (text.includes(kw)) {
+        topicScore += weight;
+      }
+    }
+    if (topicScore > bestScore) {
+      bestScore = topicScore;
+      bestTopic = topic;
+    }
+  }
+
+  // Boost score for finance-first sources
+  const sourcePriority = FINANCE_RSS_FEEDS.find(f => f.slug === sourceSlug)?.priority || 5;
+  bestScore += sourcePriority;
+
+  // Detect tickers mentioned
+  const tickers: string[] = [];
+  for (const [name, ticker] of Object.entries(COMMON_TICKERS)) {
+    if (text.includes(name.toLowerCase())) {
+      if (!tickers.includes(ticker)) tickers.push(ticker);
+    }
+  }
+
+  return { score: bestScore, topic: bestTopic, tickers };
+}
+
 // Fallback curation if OpenAI fails or key is missing
 function fallbackCuration(articles: RSSItem[]): NewsArticle[] {
-  return articles.slice(0, 10).map((a, i) => ({
-    id: i + 1,
-    rank: i + 1,
-    title: a.title,
-    source: a.source,
-    sourceSlug: a.sourceSlug,
-    url: a.link,
-    publishedAt: a.pubDate,
-    snippet: a.description,
-    summary: a.description.slice(0, 150) + '...',
-    whyRead: `Top headline from ${a.source}`,
-    whyMatters: `Market moving news from ${a.source}`,
-    marketImpact: 'Potential impact across sectors related to this headline.',
-    studentWhyRead: `Major news from ${a.source}`,
-    studentWhyMatters: 'General market news.',
-    primaryTopic: 'Markets',
-    score: 80 - i,
-    affectedTickers: [],
-    riskFlags: [],
-  }));
+  if (articles.length === 0) return [];
+
+  // Score all articles for market relevance
+  const scored = articles.map(a => {
+    const { score, topic, tickers } = scoreArticleRelevance(a.title, a.description, a.sourceSlug);
+    return { article: a, score, topic, tickers };
+  });
+
+  // Sort by relevance score (highest first)
+  scored.sort((a, b) => b.score - a.score);
+
+  // Pick top articles with source diversity (max 2 per source)
+  const selected: typeof scored = [];
+  const sourceCount: Record<string, number> = {};
+
+  for (const item of scored) {
+    if (selected.length >= 10) break;
+    const count = sourceCount[item.article.source] || 0;
+    if (count < 2) {
+      selected.push(item);
+      sourceCount[item.article.source] = count + 1;
+    }
+  }
+
+  return selected.map((item, i) => {
+    const ctx = TOPIC_CONTEXT[item.topic] || TOPIC_CONTEXT['Markets'];
+    return {
+      id: i + 1,
+      rank: i + 1,
+      title: item.article.title,
+      source: item.article.source,
+      sourceSlug: item.article.sourceSlug,
+      url: item.article.link,
+      publishedAt: item.article.pubDate,
+      snippet: item.article.description,
+      summary: item.article.description.slice(0, 200) + (item.article.description.length > 200 ? '...' : ''),
+      whyRead: ctx.whyRead,
+      whyMatters: ctx.whyMatters,
+      marketImpact: `Classified as ${item.topic}. ${item.tickers.length > 0 ? `Potentially affects: ${item.tickers.join(', ')}.` : 'Monitor for broader sector impact.'}`,
+      studentWhyRead: ctx.studentWhyRead,
+      studentWhyMatters: ctx.studentWhyMatters,
+      primaryTopic: item.topic,
+      score: Math.min(95, 60 + item.score),
+      affectedTickers: item.tickers,
+      riskFlags: item.score > 25 ? ['Market Moving'] : [],
+    };
+  });
 }
 
 // Use GPT-4o to curate top 10 finance reads
