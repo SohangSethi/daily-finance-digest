@@ -12,6 +12,9 @@ import ThemeToggle from '@/components/ThemeToggle';
 import StocksPanel from '@/components/StocksPanel';
 import GeopoliticsSection from '@/components/GeopoliticsSection';
 import CommodityTracker from '@/components/CommodityTracker';
+import InternshipCard from '@/components/InternshipCard';
+import InternshipFilters from '@/components/InternshipFilters';
+import type { InternshipPosting } from '@/lib/internships';
 
 // Fallback mock data (used if API fails)
 import {
@@ -65,7 +68,7 @@ function KPICardSkeleton() {
 
 export default function HomePage() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [roleMode, setRoleMode] = useState<'analyst' | 'stocks'>('analyst');
+  const [roleMode, setRoleMode] = useState<'analyst' | 'stocks' | 'internships'>('analyst');
   const [viewMode, setViewMode] = useState<'normal' | 'student'>('normal');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<{
@@ -85,6 +88,17 @@ export default function HomePage() {
     lastRefreshed: string;
     isLive: boolean;
   } | null>(null);
+
+  // Internships state
+  const [internshipsData, setInternshipsData] = useState<{
+    postings: InternshipPosting[];
+    stats: { totalPostings: number; livePostings: number; directLinks: number; companiesTracked: number; sectors: string[] };
+    lastRefreshed: string;
+  } | null>(null);
+  const [internshipsLoading, setInternshipsLoading] = useState(false);
+  const [selectedSector, setSelectedSector] = useState('All');
+  const [selectedSource, setSelectedSource] = useState('All');
+  const [internshipsSearchQuery, setInternshipsSearchQuery] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -219,11 +233,35 @@ export default function HomePage() {
       if (isActiveHours()) {
         console.log('[BankerBrief] Auto-refreshing data...');
         fetchBriefing();
+        // If they are on the internships tab, refresh that too
+        if (roleMode === 'internships') {
+          fetchInternships();
+        }
       }
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [roleMode]);
+
+  const fetchInternships = async () => {
+    setInternshipsLoading(true);
+    try {
+      const res = await fetch(`/api/internships?t=${Date.now()}`);
+      const json = await res.json();
+      setInternshipsData(json);
+    } catch (err) {
+      console.error('Failed to fetch internships:', err);
+    } finally {
+      setInternshipsLoading(false);
+    }
+  };
+
+  // Lazy-load internships data when tab is selected
+  useEffect(() => {
+    if (roleMode === 'internships' && !internshipsData && !internshipsLoading) {
+      fetchInternships();
+    }
+  }, [roleMode, internshipsData, internshipsLoading]);
 
 
 
@@ -333,9 +371,9 @@ export default function HomePage() {
             </div>
             <div className="flex-shrink-0 self-start mt-1 md:mt-0 flex gap-2">
               <FilterPills
-                options={['Analyst', 'Stocks']}
+                options={['Analyst', 'Stocks', 'Internships']}
                 defaultSelected="Analyst"
-                onChange={(val) => setRoleMode(val.toLowerCase() as 'analyst' | 'stocks')}
+                onChange={(val) => setRoleMode(val.toLowerCase() as 'analyst' | 'stocks' | 'internships')}
               />
               <div className="w-px bg-[var(--bb-border)] mx-1" />
               <FilterPills
@@ -611,6 +649,77 @@ export default function HomePage() {
               </div>
             </div>
           </>
+        )}
+
+        {/* ============================================ */}
+        {/* INTERNSHIPS TAB                              */}
+        {/* ============================================ */}
+        {roleMode === 'internships' && (
+          <section className="mb-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--bb-text-primary)' }}>Summer 2027 Internship Tracker</h2>
+              <p className="text-sm" style={{ color: 'var(--bb-text-secondary)' }}>
+                Aggregating opportunities from top banks, consulting firms, and tech companies. Updates twice daily.
+              </p>
+            </div>
+
+            <div className="bb-card p-4 mb-6">
+              <InternshipFilters
+                sectors={internshipsData?.stats.sectors || []}
+                selectedSector={selectedSector}
+                onSectorChange={setSelectedSector}
+                selectedSource={selectedSource}
+                onSourceChange={setSelectedSource}
+                searchQuery={internshipsSearchQuery}
+                onSearchChange={setInternshipsSearchQuery}
+                stats={{
+                  totalPostings: internshipsData?.stats.totalPostings || 0,
+                  livePostings: internshipsData?.stats.livePostings || 0,
+                  directLinks: internshipsData?.stats.directLinks || 0,
+                  companiesTracked: internshipsData?.stats.companiesTracked || 0,
+                }}
+              />
+            </div>
+
+            {internshipsLoading && !internshipsData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="bb-card p-4 h-[120px] flex flex-col justify-between">
+                    <div className="flex justify-between"><Skeleton className="w-24 h-4" /><Skeleton className="w-16 h-4" /></div>
+                    <Skeleton className="w-full h-5 mt-2" />
+                    <Skeleton className="w-2/3 h-5 mt-1" />
+                    <div className="flex justify-between mt-4"><Skeleton className="w-20 h-4" /><Skeleton className="w-16 h-6" /></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {internshipsData?.postings
+                  .filter((p) => {
+                    // Search filter
+                    if (internshipsSearchQuery) {
+                      const q = internshipsSearchQuery.toLowerCase();
+                      if (!p.company.toLowerCase().includes(q) && !p.title.toLowerCase().includes(q)) return false;
+                    }
+                    // Sector filter
+                    if (selectedSector !== 'All' && p.sector !== selectedSector) return false;
+                    // Source filter
+                    if (selectedSource === 'Live Only' && p.source === 'direct') return false;
+                    if (selectedSource === 'Direct Links' && p.source !== 'direct') return false;
+                    return true;
+                  })
+                  .map((posting) => (
+                    <InternshipCard key={posting.id} posting={posting} />
+                  ))}
+              </div>
+            )}
+            
+            {!internshipsLoading && internshipsData?.postings.length === 0 && (
+              <div className="text-center py-12" style={{ color: 'var(--bb-text-secondary)' }}>
+                No internships found matching your criteria.
+              </div>
+            )}
+          </section>
         )}
 
         {/* ============================================ */}
