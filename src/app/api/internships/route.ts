@@ -6,12 +6,16 @@
 
 import { NextResponse } from 'next/server';
 import { fetchAllInternships } from '@/lib/internships';
+import { checkAndNotify } from '@/lib/discord';
 
 export const revalidate = 43200; // Revalidate every 12 hours
 
 export async function GET() {
   try {
     const postings = await fetchAllInternships();
+
+    // Check for new batch openings and send Discord alerts (fire-and-forget)
+    checkAndNotify(postings).catch(err => console.error('[Discord] Alert check failed:', err));
 
     // Compute stats
     const liveCount = postings.filter(p => p.source !== 'direct').length;
