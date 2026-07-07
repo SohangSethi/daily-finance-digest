@@ -114,26 +114,42 @@ const COMPANIES: CompanyEntry[] = [
 ];
 
 // ============================================================
-// Internship keyword matching
+// Internship keyword matching — STRICT, title-only
+// Only matches roles that are clearly internships / co-ops
 // ============================================================
 
-const INTERN_KEYWORDS = [
-  'intern', 'internship', 'summer analyst', 'summer associate',
-  'co-op', 'coop', 'early career', 'university', 'graduate program',
-  'campus', 'student', 'rotational',
+// These patterns match on the job TITLE only — must be unambiguously intern roles
+const INTERN_TITLE_PATTERNS = [
+  /\bintern\b/i,
+  /\binternship\b/i,
+  /\bsummer\s+analyst\b/i,
+  /\bsummer\s+associate\b/i,
+  /\bsummer\s+\d{4}\b/i,          // "Summer 2027"
+  /\bco-?op\b/i,                   // "co-op" or "coop"
+  /\brotational\s+analyst\b/i,
+  /\bsummer\s+program\b/i,
 ];
 
-const YEAR_KEYWORDS = ['2027', '2026'];
+// Negative patterns — roles to EXCLUDE even if they match above
+const EXCLUDE_PATTERNS = [
+  /\bsenior\b/i,
+  /\bstaff\b/i,
+  /\bprincipal\b/i,
+  /\bdirector\b/i,
+  /\bmanager\b/i,
+  /\bvp\b/i,
+  /\blead\b/i,
+  /\bhead\s+of\b/i,
+];
 
-function isInternshipRole(title: string, description?: string): boolean {
-  const text = `${title} ${description || ''}`.toLowerCase();
-  return INTERN_KEYWORDS.some(kw => text.includes(kw));
-}
+function isInternshipRole(title: string): boolean {
+  // Must match at least one intern pattern
+  const matchesIntern = INTERN_TITLE_PATTERNS.some(p => p.test(title));
+  if (!matchesIntern) return false;
 
-function isSummerTarget(title: string, description?: string): boolean {
-  const text = `${title} ${description || ''}`.toLowerCase();
-  // If it mentions the target year, or is just an internship (no year filter needed for active postings)
-  return YEAR_KEYWORDS.some(y => text.includes(y)) || isInternshipRole(title, description);
+  // Must NOT match any exclusion pattern
+  const matchesExclude = EXCLUDE_PATTERNS.some(p => p.test(title));
+  return !matchesExclude;
 }
 
 // ============================================================
@@ -160,7 +176,7 @@ async function fetchGreenhouseInternships(company: CompanyEntry): Promise<Intern
 
     return jobs
       .filter((job: { title: string; content?: string }) =>
-        isInternshipRole(job.title, job.content)
+        isInternshipRole(job.title)
       )
       .slice(0, 20)
       .map((job: { id: number; title: string; location: { name: string }; absolute_url: string; updated_at: string; content?: string }) => ({
@@ -204,7 +220,7 @@ async function fetchLeverInternships(company: CompanyEntry): Promise<InternshipP
     const jobs = await response.json();
 
     return (jobs as { id: string; text: string; categories: { location?: string; team?: string }; hostedUrl: string; createdAt: number; description?: string }[])
-      .filter(job => isInternshipRole(job.text, job.description))
+      .filter(job => isInternshipRole(job.text))
       .slice(0, 20)
       .map(job => ({
         id: `lv-${company.slug}-${job.id}`,
