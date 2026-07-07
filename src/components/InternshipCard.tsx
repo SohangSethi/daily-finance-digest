@@ -12,7 +12,7 @@ interface InternshipPosting {
   url: string;
   postedDate: string | null;
   deadline: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
   status: 'open' | 'coming_soon';
 }
 
@@ -20,6 +20,7 @@ const SECTOR_COLORS: Record<string, string> = {
   Banking: 'bg-blue-600/20 text-blue-400 border-blue-500/30',
   Consulting: 'bg-purple-600/20 text-purple-400 border-purple-500/30',
   'Asset Management': 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30',
+  'Quant / HFT': 'bg-indigo-600/20 text-indigo-400 border-indigo-500/30',
   Tech: 'bg-cyan-600/20 text-cyan-400 border-cyan-500/30',
   Healthcare: 'bg-rose-600/20 text-rose-400 border-rose-500/30',
   Consumer: 'bg-amber-600/20 text-amber-400 border-amber-500/30',
@@ -32,6 +33,7 @@ const SOURCE_LABELS: Record<string, string> = {
   greenhouse: '🟢 Live — Greenhouse',
   lever: '🟢 Live — Lever',
   workday: '🟢 Live — Workday',
+  github: '🟢 Live — GitHub',
   direct: '🔗 Career Page',
 };
 

@@ -14,7 +14,7 @@ export interface InternshipPosting {
   url: string;
   postedDate: string | null;
   deadline: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
   status: 'open' | 'coming_soon';
 }
 
@@ -281,6 +281,7 @@ async function fetchWorkdayInternships(company: CompanyEntry): Promise<Internshi
   }
 }
 
+
 // ============================================================
 // Direct link generator (for companies with custom ATS)
 // ============================================================
@@ -302,6 +303,149 @@ function generateDirectPosting(company: CompanyEntry): InternshipPosting {
 }
 
 // ============================================================
+// GitHub Repo Parsers — Community-maintained internship lists
+// These repos are updated daily and contain banking, quant,
+// consulting, and tech roles with direct apply links.
+// ============================================================
+
+interface GitHubRepoSource {
+  name: string;
+  url: string;  // Raw GitHub URL for the markdown file
+  sourceLabel: string;
+}
+
+const GITHUB_REPOS: GitHubRepoSource[] = [
+  {
+    name: 'sndsh404/summer-2027-internships',
+    url: 'https://raw.githubusercontent.com/sndsh404/summer-2027-internships/main/README.md',
+    sourceLabel: 'sndsh404',
+  },
+  {
+    name: 'speedyapply/2027-SWE-College-Jobs',
+    url: 'https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/README.md',
+    sourceLabel: 'speedyapply',
+  },
+];
+
+// Sector detection for GitHub-sourced postings based on company name + role
+const SECTOR_RULES: { pattern: RegExp; sector: string }[] = [
+  // Banks
+  { pattern: /\b(Goldman\s*Sachs|JPMorgan|JP\s*Morgan|Morgan\s*Stanley|Bank\s*of\s*America|Citigroup|Citi\b|Barclays|Deutsche\s*Bank|UBS|HSBC|BNP|Credit\s*Suisse|Wells\s*Fargo|SMBC|Mizuho|MUFG|Nomura|Jefferies|RBC|Lazard|Evercore|Moelis|PJT|Greenhill|Centerview|Perella|Houlihan|Piper\s*Sandler|Stifel|Raymond\s*James|Truist|KeyBanc|Cowen|TD\s*Securities|Scotiabank|BMO|CIBC)/i, sector: 'Banking' },
+  // Quant / HFT / Hedge Funds
+  { pattern: /\b(Citadel|Two\s*Sigma|Jane\s*Street|DE\s*Shaw|D\.E\.\s*Shaw|Renaissance|Point72|Bridgewater|AQR|Millennium|Balyasny|Hudson\s*River|Jump\s*Trading|Tower\s*Research|Virtu|Optiver|IMC\s*Trading|Akuna|DRW|Susquehanna|SIG\b|Five\s*Rings|HRT|Old\s*Mission|Voleon|Voloridge|Arrowstreet|Man\s*Group|Winton|Squarepoint|Cubist|WorldQuant|Aquatic|Radix|Flow\s*Traders|Maven|XTX)/i, sector: 'Quant / HFT' },
+  // Consulting
+  { pattern: /\b(McKinsey|BCG|Bain\b|Deloitte|PwC|EY\b|KPMG|Accenture|Oliver\s*Wyman|Booz|Roland\s*Berger|A\.T\.\s*Kearney|Strategy&|LEK|Simon-Kucher|ZS\s*Associates|Alvarez)/i, sector: 'Consulting' },
+  // Asset Management / PE / VC
+  { pattern: /\b(BlackRock|PGIM|Prudential|Vanguard|Fidelity|PIMCO|T\.\s*Rowe|State\s*Street|Capital\s*Group|Wellington|Invesco|Franklin\s*Templeton|KKR|Blackstone|Apollo|Carlyle|TPG|Warburg|Bain\s*Capital|Advent|Ares|StepStone|Affinius)/i, sector: 'Asset Management' },
+  // Tech
+  { pattern: /\b(Google|Microsoft|Amazon|Meta|Apple|NVIDIA|Netflix|Stripe|Coinbase|Anthropic|OpenAI|Cloudflare|Databricks|Figma|SpaceX|Tesla|Uber|Lyft|Airbnb|DoorDash|Snap|Pinterest|Salesforce|Adobe|Oracle|SAP|IBM|Intel|AMD|Qualcomm|Broadcom|Palantir|Snowflake|Datadog|MongoDB|Elastic|Twilio|Block|Square|Robinhood|Plaid|Ramp|Brex|Rippling|ByteDance|TikTok)/i, sector: 'Tech' },
+  // Healthcare / Pharma
+  { pattern: /\b(Johnson\s*&\s*Johnson|J&J|Pfizer|UnitedHealth|Abbott|Merck|AbbVie|Amgen|Gilead|Bristol-Myers|Eli\s*Lilly|Medtronic|Stryker|Baxter|Medpace)/i, sector: 'Healthcare' },
+  // Defense / Aero
+  { pattern: /\b(Lockheed|Boeing|Raytheon|Northrop|General\s*Dynamics|L3Harris|BAE|Blue\s*Origin|SpaceX|GE\s*Aerospace|GE\s*Aviation)/i, sector: 'Defense' },
+  // Energy
+  { pattern: /\b(ExxonMobil|Chevron|Shell|BP\b|ConocoPhillips|Schlumberger|Halliburton|Baker\s*Hughes|Solar\s*Turbines)/i, sector: 'Energy' },
+  // Consumer
+  { pattern: /\b(Procter|P&G|Coca-Cola|PepsiCo|Unilever|Nike|Walmart|Target|Costco|Home\s*Depot|Mars|Nestle|Colgate)/i, sector: 'Consumer' },
+  // Industrial
+  { pattern: /\b(Toyota|Ford|GM\b|General\s*Motors|Caterpillar|John\s*Deere|3M|Honeywell|Siemens|GE\s*Appliances|TSMC|Delta\s*Air)/i, sector: 'Industrial' },
+];
+
+function detectSector(company: string, role: string): string {
+  const text = `${company} ${role}`;
+  for (const rule of SECTOR_RULES) {
+    if (rule.pattern.test(text)) return rule.sector;
+  }
+  // Fallback: check role keywords
+  if (/\b(quant|trading|trader)\b/i.test(role)) return 'Quant / HFT';
+  if (/\b(investment\s*bank|IBD|M&A|capital\s*markets|S&T|sales\s*&\s*trading)\b/i.test(role)) return 'Banking';
+  if (/\b(consult)/i.test(role)) return 'Consulting';
+  return 'Tech'; // default
+}
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+/**
+ * Parse a markdown table from a GitHub repo README into InternshipPostings.
+ * Expects format: | Company | Role | Location | Apply | Added |
+ */
+function parseMarkdownTable(markdown: string, sourceLabel: string): InternshipPosting[] {
+  const postings: InternshipPosting[] = [];
+  const lines = markdown.split('\n');
+
+  for (const line of lines) {
+    // Skip non-table lines and header/separator rows
+    if (!line.startsWith('|')) continue;
+    const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
+    if (cells.length < 4) continue;
+    // Skip header rows
+    if (cells[0] === 'Company' || cells[0].startsWith('---')) continue;
+    if (cells[1]?.startsWith('---')) continue;
+
+    const company = cells[0].replace(/🔒|🛂|🇺🇸/g, '').trim();
+    const role = cells[1]?.replace(/🔒|🛂|🇺🇸/g, '').trim() || '';
+    const location = cells[2]?.trim() || 'See listing';
+
+    // Extract URL from markdown link [text](url) in the Apply column
+    const applyCell = cells[3] || '';
+    const urlMatch = applyCell.match(/\[.*?\]\((https?:\/\/[^)]+)\)/);
+    const url = urlMatch ? urlMatch[1] : '';
+
+    // Skip closed roles (🔒 in the apply column means closed)
+    if (applyCell.includes('🔒') || !url) continue;
+
+    const addedDate = cells[4]?.trim() || null;
+
+    const sector = detectSector(company, role);
+    const slug = slugify(company);
+
+    postings.push({
+      id: `gh-${sourceLabel}-${slug}-${slugify(role)}`,
+      company,
+      companySlug: slug,
+      sector,
+      title: role,
+      location,
+      url,
+      postedDate: addedDate && /^\d{4}-\d{2}-\d{2}$/.test(addedDate) ? new Date(addedDate).toISOString() : null,
+      deadline: null,
+      source: 'github' as InternshipPosting['source'],
+      status: 'open',
+    });
+  }
+
+  return postings;
+}
+
+/**
+ * Fetch and parse a GitHub repo's markdown internship list
+ */
+async function fetchGitHubRepoInternships(repo: GitHubRepoSource): Promise<InternshipPosting[]> {
+  try {
+    const response = await fetch(repo.url, {
+      next: { revalidate: 43200 },
+      headers: { 'User-Agent': 'BankerBrief/1.0' },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      console.warn(`GitHub repo fetch failed for ${repo.name}: ${response.status}`);
+      return [];
+    }
+
+    const markdown = await response.text();
+    const postings = parseMarkdownTable(markdown, repo.sourceLabel);
+    console.log(`[GitHub] Parsed ${postings.length} postings from ${repo.name}`);
+    return postings;
+  } catch (error) {
+    console.warn(`GitHub repo error for ${repo.name}:`, error);
+    return [];
+  }
+}
+
+// ============================================================
 // Main fetch function — aggregates all sources
 // ============================================================
 
@@ -314,11 +458,12 @@ export async function fetchAllInternships(): Promise<InternshipPosting[]> {
   const workdayCompanies = COMPANIES.filter(c => c.ats.type === 'workday');
   const directCompanies = COMPANIES.filter(c => c.ats.type === 'direct');
 
-  // Fetch from all API-backed sources in parallel
+  // Fetch from all API-backed sources + GitHub repos in parallel
   const apiPromises = [
     ...greenhouseCompanies.map(c => fetchGreenhouseInternships(c)),
     ...leverCompanies.map(c => fetchLeverInternships(c)),
     ...workdayCompanies.map(c => fetchWorkdayInternships(c)),
+    ...GITHUB_REPOS.map(r => fetchGitHubRepoInternships(r)),
   ];
 
   const results = await Promise.allSettled(apiPromises);
@@ -329,26 +474,36 @@ export async function fetchAllInternships(): Promise<InternshipPosting[]> {
     }
   }
 
+  // Deduplicate: if a company has both GitHub-sourced and ATS-sourced postings,
+  // keep both but dedupe by URL
+  const seenUrls = new Set<string>();
+  const deduped: InternshipPosting[] = [];
+  for (const posting of allPostings) {
+    if (!seenUrls.has(posting.url)) {
+      seenUrls.add(posting.url);
+      deduped.push(posting);
+    }
+  }
+
   // Track which companies already have live postings
-  const companiesWithLiveData = new Set(allPostings.map(p => p.companySlug));
+  const companiesWithLiveData = new Set(deduped.map(p => p.companySlug));
 
   // Add direct link entries for companies without live data
-  // This includes all "direct" ATS companies + any API companies that returned 0 results
   for (const company of directCompanies) {
     if (!companiesWithLiveData.has(company.slug)) {
-      allPostings.push(generateDirectPosting(company));
+      deduped.push(generateDirectPosting(company));
     }
   }
 
   // Also add direct links for API companies that failed
   for (const company of [...greenhouseCompanies, ...leverCompanies, ...workdayCompanies]) {
     if (!companiesWithLiveData.has(company.slug)) {
-      allPostings.push(generateDirectPosting(company));
+      deduped.push(generateDirectPosting(company));
     }
   }
 
   // Sort: live postings first (by date), then direct links alphabetically
-  allPostings.sort((a, b) => {
+  deduped.sort((a, b) => {
     // Live postings before direct links
     if (a.source !== 'direct' && b.source === 'direct') return -1;
     if (a.source === 'direct' && b.source !== 'direct') return 1;
@@ -364,7 +519,7 @@ export async function fetchAllInternships(): Promise<InternshipPosting[]> {
     return a.company.localeCompare(b.company);
   });
 
-  return allPostings;
+  return deduped;
 }
 
 // Export company list for use in UI (sector counts etc.)

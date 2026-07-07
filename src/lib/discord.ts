@@ -14,7 +14,7 @@ interface InternshipPosting {
   location: string;
   url: string;
   postedDate: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
   status: 'open' | 'coming_soon';
 }
 
@@ -153,6 +153,7 @@ export async function sendDiscordMessage(content: string): Promise<void> {
 function getColorForSector(sector: string): number {
   const colors: Record<string, number> = {
     Banking: 0x3B82F6,       // blue
+    'Quant / HFT': 0x6366F1,  // indigo
     Consulting: 0xA855F7,    // purple
     'Asset Management': 0x10B981, // emerald
     Tech: 0x06B6D4,          // cyan
