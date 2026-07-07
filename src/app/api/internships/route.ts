@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 import { fetchAllInternships } from '@/lib/internships';
 import { checkAndNotify } from '@/lib/discord';
 
-export const revalidate = 43200; // Revalidate every 12 hours
+export const revalidate = 10800; // Revalidate every 3 hours
 
 export async function GET() {
   try {
@@ -34,7 +34,7 @@ export async function GET() {
       lastRefreshed: new Date().toISOString(),
     }, {
       headers: {
-        'Cache-Control': 'public, max-age=43200, s-maxage=43200, stale-while-revalidate=86400',
+        'Cache-Control': 'public, max-age=10800, s-maxage=10800, stale-while-revalidate=86400',
       },
     });
   } catch (error) {

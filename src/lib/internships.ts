@@ -161,7 +161,7 @@ async function fetchGreenhouseInternships(company: CompanyEntry): Promise<Intern
   try {
     const url = `https://boards-api.greenhouse.io/v1/boards/${config.boardToken}/jobs`;
     const response = await fetch(url, {
-      next: { revalidate: 43200 },
+      next: { revalidate: 10800 },
       headers: { 'User-Agent': 'BankerBrief/1.0' },
       signal: AbortSignal.timeout(10000),
     });
@@ -207,7 +207,7 @@ async function fetchLeverInternships(company: CompanyEntry): Promise<InternshipP
   try {
     const url = `https://api.lever.co/v0/postings/${config.companySlug}?mode=json`;
     const response = await fetch(url, {
-      next: { revalidate: 43200 },
+      next: { revalidate: 10800 },
       headers: { 'User-Agent': 'BankerBrief/1.0' },
       signal: AbortSignal.timeout(10000),
     });
@@ -253,7 +253,7 @@ async function fetchWorkdayInternships(company: CompanyEntry): Promise<Internshi
 
     const response = await fetch(apiUrl, {
       method: 'POST',
-      next: { revalidate: 43200 },
+      next: { revalidate: 10800 },
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'BankerBrief/1.0',
@@ -441,7 +441,7 @@ function parseMarkdownTable(markdown: string, sourceLabel: string): InternshipPo
 async function fetchGitHubRepoInternships(repo: GitHubRepoSource): Promise<InternshipPosting[]> {
   try {
     const response = await fetch(repo.url, {
-      next: { revalidate: 43200 },
+      next: { revalidate: 10800 },
       headers: { 'User-Agent': 'BankerBrief/1.0' },
       signal: AbortSignal.timeout(10000),
     });
