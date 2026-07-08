@@ -1,7 +1,11 @@
 // ============================================================
 // Summer 2027 Internship Tracker
-// Aggregates internship postings from company career sites
-// Sources: Greenhouse API, Lever API, Workday CXS API, Direct links
+// Aggregates internship postings from multiple sources:
+// 1. Greenhouse API, Lever API, Workday CXS API
+// 2. GitHub community repos (sndsh404, vanshb03, speedyapply, zapplyjobs)
+// 3. AI-powered web scanner (OpenAI GPT-4o with web search)
+// 4. Direct career page links
+// Refreshes every 3 hours.
 // ============================================================
 
 export interface InternshipPosting {
@@ -14,7 +18,7 @@ export interface InternshipPosting {
   url: string;
   postedDate: string | null;
   deadline: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'ai' | 'direct';
   status: 'open' | 'coming_soon';
 }
 
@@ -337,9 +341,19 @@ const GITHUB_REPOS: GitHubRepoSource[] = [
     sourceLabel: 'sndsh404',
   },
   {
+    name: 'vanshb03/Summer2027-Internships',
+    url: 'https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/main/README.md',
+    sourceLabel: 'vanshb03',
+  },
+  {
     name: 'speedyapply/2027-SWE-College-Jobs',
     url: 'https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/README.md',
     sourceLabel: 'speedyapply',
+  },
+  {
+    name: 'zapplyjobs/Internships-2027',
+    url: 'https://raw.githubusercontent.com/zapplyjobs/Internships-2027/main/README.md',
+    sourceLabel: 'zapplyjobs',
   },
 ];
 
@@ -474,12 +488,13 @@ export async function fetchAllInternships(): Promise<InternshipPosting[]> {
   const workdayCompanies = COMPANIES.filter(c => c.ats.type === 'workday');
   const directCompanies = COMPANIES.filter(c => c.ats.type === 'direct');
 
-  // Fetch from all API-backed sources + GitHub repos in parallel
+  // Fetch from all API-backed sources + GitHub repos + AI scanner in parallel
   const apiPromises = [
     ...greenhouseCompanies.map(c => fetchGreenhouseInternships(c)),
     ...leverCompanies.map(c => fetchLeverInternships(c)),
     ...workdayCompanies.map(c => fetchWorkdayInternships(c)),
     ...GITHUB_REPOS.map(r => fetchGitHubRepoInternships(r)),
+    fetchAIScannedInternships(), // GPT-4o web search
   ];
 
   const results = await Promise.allSettled(apiPromises);
@@ -536,6 +551,36 @@ export async function fetchAllInternships(): Promise<InternshipPosting[]> {
   });
 
   return deduped;
+}
+
+// ============================================================
+// AI Scanner Bridge — converts AI-scanned postings into
+// the standard InternshipPosting format
+// ============================================================
+
+async function fetchAIScannedInternships(): Promise<InternshipPosting[]> {
+  try {
+    // Dynamic import to avoid circular dependencies
+    const { scanForNewInternships } = await import('./internshipScanner');
+    const scanned = await scanForNewInternships();
+
+    return scanned.map(p => ({
+      id: `ai-${slugify(p.company)}-${slugify(p.title)}`,
+      company: p.company,
+      companySlug: slugify(p.company),
+      sector: p.sector,
+      title: p.title,
+      location: p.location,
+      url: p.url,
+      postedDate: p.postedDate ? new Date(p.postedDate).toISOString() : null,
+      deadline: null,
+      source: 'ai' as InternshipPosting['source'],
+      status: 'open' as const,
+    }));
+  } catch (error) {
+    console.warn('[AI Scanner] Failed:', error);
+    return [];
+  }
 }
 
 // Export company list for use in UI (sector counts etc.)

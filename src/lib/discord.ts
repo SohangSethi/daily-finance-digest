@@ -14,7 +14,7 @@ interface InternshipPosting {
   location: string;
   url: string;
   postedDate: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'ai' | 'direct';
   status: 'open' | 'coming_soon';
 }
 

@@ -1,14 +1,16 @@
 // ============================================================
 // /api/internships — Summer 2027 Internship Tracker
-// Aggregates internship postings from company career sites
-// Revalidates every 12 hours (twice daily)
+// Aggregates postings from APIs, GitHub repos, and AI web search
+// Force-dynamic: always fetches fresh data, no stale cache
 // ============================================================
 
 import { NextResponse } from 'next/server';
 import { fetchAllInternships } from '@/lib/internships';
 import { checkAndNotify } from '@/lib/discord';
 
-export const revalidate = 10800; // Revalidate every 3 hours
+// Force this route to ALWAYS run server-side and fetch fresh data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -20,6 +22,7 @@ export async function GET() {
     // Compute stats
     const liveCount = postings.filter(p => p.source !== 'direct').length;
     const directCount = postings.filter(p => p.source === 'direct').length;
+    const aiCount = postings.filter(p => p.source === 'ai').length;
     const sectors = [...new Set(postings.map(p => p.sector))];
 
     return NextResponse.json({
@@ -28,12 +31,14 @@ export async function GET() {
         totalPostings: postings.length,
         livePostings: liveCount,
         directLinks: directCount,
+        aiDiscovered: aiCount,
         sectors,
         companiesTracked: new Set(postings.map(p => p.companySlug)).size,
       },
       lastRefreshed: new Date().toISOString(),
     }, {
       headers: {
+        // Cache for 3 hours on CDN, serve stale while revalidating
         'Cache-Control': 'public, max-age=10800, s-maxage=10800, stale-while-revalidate=86400',
       },
     });
@@ -42,7 +47,7 @@ export async function GET() {
     return NextResponse.json(
       {
         postings: [],
-        stats: { totalPostings: 0, livePostings: 0, directLinks: 0, sectors: [], companiesTracked: 0 },
+        stats: { totalPostings: 0, livePostings: 0, directLinks: 0, aiDiscovered: 0, sectors: [], companiesTracked: 0 },
         lastRefreshed: new Date().toISOString(),
         error: 'Failed to fetch internship data',
       },

@@ -12,7 +12,7 @@ interface InternshipPosting {
   url: string;
   postedDate: string | null;
   deadline: string | null;
-  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'direct';
+  source: 'greenhouse' | 'lever' | 'workday' | 'github' | 'ai' | 'direct';
   status: 'open' | 'coming_soon';
 }
 
@@ -34,6 +34,7 @@ const SOURCE_LABELS: Record<string, string> = {
   lever: '🟢 Live — Lever',
   workday: '🟢 Live — Workday',
   github: '🟢 Live — GitHub',
+  ai: '🤖 AI Discovered',
   direct: '🔗 Career Page',
 };
 
