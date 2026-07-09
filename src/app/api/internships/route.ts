@@ -8,9 +8,8 @@ import { NextResponse } from 'next/server';
 import { fetchAllInternships } from '@/lib/internships';
 import { checkAndNotify } from '@/lib/discord';
 
-// Force this route to ALWAYS run server-side and fetch fresh data
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Revalidate every 3 hours using ISR so the slow AI scan happens in the background
+export const revalidate = 10800;
 
 export async function GET() {
   try {
